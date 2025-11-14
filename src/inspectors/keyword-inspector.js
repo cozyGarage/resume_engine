@@ -9,6 +9,9 @@ Keyword analysis for HackMyResume.
 @module inspectors/keyword-inspector
 */
 
+const transformStrings = require('../utils/string-transformer');
+const SEARCH_FILTERS = ['imp', 'computed', 'safeStartDate', 'safeEndDate', 'safeDate', 'safeReleaseDate'];
+
 /**
 Analyze the resume's use of keywords.
 TODO: BUG: Keyword search regex is inaccurate, especially for one or two
@@ -39,7 +42,13 @@ module.exports = {
     // To achieve this, remove keywords from the search digest and treat them
     // separately.
     let searchable = '';
-    rez.transformStrings(['imp', 'computed', 'safe'], ( key, val ) => searchable += ` ${val}`);
+    const snapshot = (rez && typeof rez.dupe === 'function')
+      ? rez.dupe()
+      : JSON.parse(JSON.stringify(rez || {}));
+    transformStrings(snapshot, SEARCH_FILTERS, ( key, val ) => {
+      searchable += ` ${val}`;
+      return val;
+    });
 
     // Assemble a regex skeleton we can use to test for keywords with a bit
     // more

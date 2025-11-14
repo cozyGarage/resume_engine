@@ -1,3 +1,5 @@
+/* global describe, it */
+
 /**
 High-level API test routines for HackMyResume. Test HackMyResume verbs such
 as build, new, peek, etc., by creating and invoking a Verb object.
@@ -6,22 +8,15 @@ as build, new, peek, etc., by creating and invoking a Verb object.
 */
 
 var chai = require('chai')
-  , chaiAsPromised = require("chai-as-promised")
-  , path = require('path')
-  , _ = require('underscore')
-	, FRESHResume = require('../../src/core/fresh-resume')
+  , chaiAsPromised = require('chai-as-promised')
   , FCMD = require( '../../src/index')
-  , validator = require('is-my-json-valid')
   , EXTEND = require('extend');
 
 // Initialize Chai As Promised
 chai.use(chaiAsPromised);
-expect = chai.expect;
-assert = chai.assert;
-should = chai.should();
+const assert = chai.assert;
+chai.should();
 chai.config.includeStack = false;
-
-var _sheet;
 
 var opts = {
   format: 'JRS',
@@ -44,25 +39,10 @@ var ft = 'node_modules/fresh-test-resumes/src/jrs/';
 var tests = [
 
   [ 'new',
-    [sb + 'new-fresh-resume.json'],
-    [],
-    opts,
-    ' (FRESH format)'
-  ],
-
-  [ 'new',
     [sb + 'new-jrs-resume.json'],
     [],
     opts2,
     ' (JRS format)'
-  ],
-
-  [
-    'new',
-    [sb + 'new-1.json', sb + 'new-2.json', sb + 'new-3.json'],
-    [],
-    opts,
-    ' (multiple FRESH resumes)'
   ],
 
   [ 'new',
@@ -76,98 +56,50 @@ var tests = [
     [],
     [],
     opts,
-    " (when a filename isn't specified)"
+     ' (when a filename isn\'t specified)'
   ],
 
   [ 'validate',
-    [ft + 'jane-fullstacker.json'],
-    [],
-    opts,
-    ' (jane-q-fullstacker|FRESH)'
-  ],
-
-  [ 'validate',
-    [ft + 'johnny-trouble.json'],
-    [],
-    opts,
-    ' (johnny-trouble|FRESH)'
-  ],
-
-  [ 'validate',
-    [sb + 'new-fresh-resume.json'],
-    [],
-    opts,
-    ' (new-fresh-resume|FRESH)'
-  ],
-
-  [ 'validate',
-    ['node_modules/fresh-test-resumes/src/jrs/richard-hendriks.json'],
+    [ft + 'richard-hendriks.json'],
     [],
     opts2,
     ' (richard-hendriks.json|JRS)'
   ],
 
   [ 'validate',
-    ['node_modules/fresh-test-resumes/src/jrs/jane-incomplete.json'],
+    [ft + 'jane-incomplete.json'],
     [],
     opts2,
     ' (jane-incomplete.json|JRS)'
   ],
 
   [ 'validate',
-    [sb + 'new-1.json', sb + 'new-jrs-resume.json', sb + 'new-1.json',
-      sb + 'new-2.json', sb + 'new-3.json'],
+    [sb + 'new-jrs-resume.json', sb + 'new-jrs-1.json', sb + 'new-jrs-2.json',
+      sb + 'new-jrs-3.json'],
     [],
     opts,
-    ' (5|BOTH)'
+    ' (multi|JRS)'
   ],
 
   [ 'analyze',
-    [ft + 'jane-fullstacker.json'],
-    [],
-    opts,
-    ' (jane-q-fullstacker|FRESH)'
-  ],
-
-  [ 'analyze',
-    ['node_modules/fresh-test-resumes/src/jrs/richard-hendriks.json'],
+    [ft + 'richard-hendriks.json'],
     [],
     opts2,
     ' (richard-hendriks|JRS)'
   ],
 
   [ 'build',
-    [ ft + 'jane-fullstacker.json', ft + 'override/jane-fullstacker-override.fresh.json' ],
-    [ sb + 'merged/jane-fullstacker-gamedev.fresh.all'],
-    opts,
-    ' (jane-q-fullstacker w/ override|FRESH)'
-  ],
-
-  [ 'build',
-    [ ft + 'override/jane-partial-a.json', ft + 'override/jane-partial-b.json',
-      ft + 'override/jane-partial-c.json' ],
-    [ sb + 'merged/jane-abc.fresh.all'],
-    opts,
-    ' (jane merge A + B + C|FRESH)',
-    function( r ) {
-      var expected = [
-        'name','meta','info', 'contact', 'location', 'projects', 'social',
-        'employment', 'education', 'affiliation', 'service', 'skills',
-        'samples', 'writing', 'reading', 'speaking', 'recognition',
-        'references', 'testimonials', 'languages', 'interests',
-        'extracurricular', 'governance'
-      ];
-
-      Object.keys( _.pick( r, expected ) ).length
-        .should.equal( expected.length );
-    }
+    [ ft + 'richard-hendriks.json' ],
+    [ sb + 'richard-hendriks/resume.all'],
+    EXTEND(true, {}, opts, { theme: 'jsonresume-theme-modern' }),
+    ' (richard-hendriks + modern|JRS)'
   ],
 
   [ '!build',
-    [ ft + 'jane-fullstacker.json'],
+    [ ft + 'richard-hendriks.json'],
     [ sb + 'shouldnt-exist.pdf' ],
-    EXTEND(true, {}, opts, { theme: 'awesome' }),
-    ' (jane-q-fullstacker + Awesome + PDF|FRESH)'
+    EXTEND(true, {}, opts, { theme: 'jsonresume-theme-nonexistent' }),
+    ' (invalid theme)'
   ]
 
 ];
@@ -190,7 +122,7 @@ describe('Testing API interface', function () {
         (shouldSucceed ? ' SUCCEED' : ' FAIL') + msg, function (done) {
 
       var v = new FCMD.verbs[verb]();
-      v.on('hmr:error', function(ex) {
+      v.on('hmr:error', function() {
         assert(false);
       });
       var prom = v.invoke( src, dst, opts );

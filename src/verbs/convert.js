@@ -27,8 +27,7 @@ module.exports = ConvertVerb;
 
 
 
-/** Private workhorse method. Convert 0..N resumes between FRESH and JRS
-formats. */
+/** Private workhorse method. Normalize 0..N resumes to the JRS format. */
 
 var _convert = function( srcs, dst, opts ) {
 
@@ -62,15 +61,6 @@ var _convert = function( srcs, dst, opts ) {
   if (!_.contains(['JRS','JRS@1','JRS@1.0','JRS@EDGE'], fmtUp)) {
     this.err(HMSTATUS.invalidSchemaVersion, {data: opts.format || 'JRS', quit: true});
   }
-    // freshVerRegex = require '../utils/fresh-version-regex'
-    // matches = fmtUp.match freshVerRegex()
-    // # null
-    // # [ 'JRS@1.0', 'JRS', '1.0', index: 0, input: 'FRESH' ]
-    // # [ 'FRESH', 'FRESH', undefined, index: 0, input: 'FRESH' ]
-    // if not matches
-    //   @err HMSTATUS.invalidSchemaVersion, data: opts.format.trim(), quit: true
-    // targetSchema = matches[1]
-    // targetVer = matches[2] || '1'
 
   // If any errors have occurred this early, we're done.
   if (this.hasError()) {

@@ -26,10 +26,8 @@ module.exports = {
 
   options:              require('./core/default-options'),
   formats:              require('./core/default-formats'),
-  Sheet:                require('./core/fresh-resume'),
-  FRESHResume:          require('./core/fresh-resume'),
+  Sheet:                require('./core/jrs-resume'),
   JRSResume:            require('./core/jrs-resume'),
-  FRESHTheme:           require('./core/fresh-theme'),
   JRSTheme:             require('./core/jrs-theme'),
   ResumeFactory:        require('./core/resume-factory'),
   FluentDate:           require('./core/fluent-date'),

@@ -21,7 +21,7 @@ require('string.prototype.startswith');
 
 
 /**
-A simple factory class for FRESH and JSON Resumes.
+A simple factory class for JSON Resumes (legacy FRESH input is converted automatically).
 @class ResumeFactory
 */
 
@@ -36,9 +36,9 @@ module.exports = {
   as passthrough settings for FRESHResume or JRSResume. Structure:
 
       {
-        format: 'FRESH',    // Format to open as. ('FRESH', 'JRS', null)
-        objectify: true,    // FRESH/JRSResume or raw JSON?
-        inner: {            // Passthru options for FRESH/JRSResume
+        format: 'JRS',      // Only JRS is supported going forward
+        objectify: true,    // JRSResume or raw JSON
+        inner: {
           sort: false
         }
       }
@@ -94,17 +94,18 @@ module.exports = {
 var _parse = function( fileName, opts, eve ) {
 
   let rawData = null;
+  const fmt = (opts && opts.format ? String(opts.format) : 'JRS').toUpperCase();
   try {
 
     // Read the file
-    eve && eve.stat( HME.beforeRead, { file: fileName });
+    eve && eve.stat( HME.beforeRead, { file: fileName, fmt });
     rawData = FS.readFileSync( fileName, 'utf8' );
-    eve && eve.stat( HME.afterRead, { file: fileName, data: rawData });
+    eve && eve.stat( HME.afterRead, { file: fileName, data: rawData, fmt });
 
     // Parse the file
-    eve && eve.stat(HME.beforeParse, { data: rawData });
+    eve && eve.stat(HME.beforeParse, { data: rawData, fmt });
     const ret = { json: JSON.parse( rawData ) };
-    eve && eve.stat(HME.afterParse, { file: fileName, data: ret.json });
+    eve && eve.stat(HME.afterParse, { file: fileName, data: ret.json, fmt });
     return ret;
   } catch (err) {
     // Can be ENOENT, EACCES, SyntaxError, etc.

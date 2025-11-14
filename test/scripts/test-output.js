@@ -83,7 +83,7 @@ describe('Testing Ouput interface', function () {
   }
 
   var title = '*** HackMyResume v' + PKG.version + ' ***';
-  var feedMe = 'Please feed me a resume in FRESH or JSON Resume format.';
+  var feedMe = 'Please feed me a resume in JSON Resume format.';
   var manPage = FS.readFileSync( PATH.resolve( __dirname, '../../src/cli/help/use.txt' ), 'utf8').replace(/\*\*/g, '');
   var manPages = { };
   ['build','new','convert','analyze','validate','peek'].forEach( function(verb) {
@@ -104,7 +104,7 @@ describe('Testing Ouput interface', function () {
 
   run('BUILD should display an error on a broken resume',
      ['build',
-      'node_modules/fresh-test-resumes/src/fresh/johnny-trouble.broken.json',
+      'test/fixtures/broken-resume.json',
       '-t', 'modern'
     ], [ title, 'Error: Invalid or corrupt JSON on line'  ]);
 
@@ -123,35 +123,35 @@ describe('Testing Ouput interface', function () {
   run('HMR should accept raw JSON via --options',
       [
         'build',
-        'node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json',
+        'node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json',
         'to',
         'test/sandbox/temp/janeq-1.all',
-        '-o',
-        "{ theme: 'compact', debug: true, pdf: 'wkhtmltopdf' }"],
-      [ 'Applying COMPACT theme (', '(with wkhtmltopdf)'] );
+          '-o',
+          '{ theme: \'jsonresume-theme-classy\', debug: true, pdf: \'wkhtmltopdf\' }'],
+      [ 'Applying JSONRESUME-THEME-CLASSY theme', '(with wkhtmltopdf)'] );
 
   run('HMR should accept a JSON settings file via --options',
       [
         'build',
-        'node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json',
+        'node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json',
         'to',
         'test/sandbox/temp/janeq-2.all',
         '--options',
-        "test/scripts/hmr-options.json"],
-      [ 'Applying POSITIVE theme'] );
+          'test/scripts/hmr-options.json'],
+      [ 'Applying JSONRESUME-THEME-SCEPTILE theme'] );
 
   run('Explicit command line options should override --options',
       [
         'build',
-        'node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json',
+        'node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json',
         'to',
         'test/sandbox/temp/janeq-3.all',
         '--options',
-        "test/scripts/hmr-options.json",
-        "-t",
-        "modern"
+          'test/scripts/hmr-options.json',
+          '-t',
+          'modern'
       ],
-      [ 'Applying MODERN theme'] );
+      [ 'Applying JSONRESUME-THEME-MODERN theme'] );
 
   run('HMR should detect a missing or inaccessible options file',
       [
@@ -160,9 +160,9 @@ describe('Testing Ouput interface', function () {
         'to',
         'dontcare.all',
         '--options',
-        "test/scripts/hmr-options-nonexistent.json",
-        "-t",
-        "modern"
+          'test/scripts/hmr-options-nonexistent.json',
+          '-t',
+          'modern'
       ],
       [ 'The specified options file is missing or inaccessible'] );
 
@@ -173,9 +173,9 @@ describe('Testing Ouput interface', function () {
         'to',
         'dontcare.all',
         '--options',
-        "test/scripts/hmr-options-broken.json",
-        "-t",
-        "modern"
+          'test/scripts/hmr-options-broken.json',
+          '-t',
+          'modern'
       ],
       [ 'The specified options file is invalid'] );
 
