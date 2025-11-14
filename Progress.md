@@ -1,4 +1,4 @@
-Progress report — Bun migration prototype
+PROGRESS REPORT — BUN MIGRATION PROTOTYPE
 
 Date: 2025-11-14
 Branch: migrate/bun

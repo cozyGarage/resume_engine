@@ -91,6 +91,72 @@ Investigate adding [**Scribus SLA**][scri] support ([#54][i54]).
 
 When released.
 
+## Bun migration plan (RFC)
+
+This RFC-style plan documents the concrete steps, milestones, risks, and
+acceptance criteria for migrating the repository's developer and CI tooling to
+Bun, and for incrementally removing Grunt.
+
+Scope
+- Replace test/lint/build developer workflows that currently run via Grunt
+    with Bun-friendly scripts and CI jobs. Maintain runtime compatibility for
+    end users (do not change CLI semantics in this phase).
+
+Goals & success criteria
+- Developer `bun install` + `bunx` flows reproduce test runs locally.
+- CI jobs run deterministic tests with `HMR_NOW=2018-01-01` and pass.
+- At least one CI job exercises PDF generation with `wkhtmltopdf` installed.
+- A migration branch is merged with tests and docs updated; Grunt is
+    deprecated and removable in a follow-up cleanup PR.
+
+Milestones
+1. Prototype and get tests green under Bun (COMPLETE).
+2. Add CI workflows that use Bun and exercise PDFs in a separate job
+     (COMPLETE).
+3. Add Bun-native npm scripts to `package.json` for clean, lint, and test
+     flows (IN-PROGRESS).
+4. Convert project contributors' documented dev workflow in `README.md` to
+     describe Bun steps (COMPLETE).
+5. Run dependency audit and pin ESM-only packages or provide wrappers for
+     compatibility (PENDING).
+6. Replace Grunt usage in repo (e.g., in `package.json` scripts and CI) and
+     remove the Grunt devDependency in a follow-up PR (POST-MIGRATION).
+
+Detailed task list
+- Implement `scripts/test` npm script that runs, in order:
+    1. clean (remove sandbox temp directories)
+    2. lint (eslint via bunx)
+    3. test (mocha via bunx with `HMR_NOW` pinned)
+
+- Replace `package.json`'s `test` script to call the new script once tested.
+
+- Update `.github/workflows/bun.yml` to call the new `test` script instead of
+    `bunx grunt test` and simplify the workflow by removing Grunt install.
+
+- Run tests locally using `bun run test:ci` and `bun run test:bun:direct` to
+    validate parity.
+
+Risks & mitigations
+- ESM-only dependencies causing runtime errors under Bun. Mitigation: audit
+    and pin or replace, and add shims where necessary.
+- PDF engines vary across platforms. Mitigation: keep PDF test in a separate
+    CI job that installs a known-good engine (`wkhtmltopdf`) on ubuntu-latest.
+- Subtle behavioral differences between runtimes (node vs bun). Mitigation:
+    keep code changes minimal, prefer environment-variable shims (e.g., `HMR_NOW`)
+    and add tests to catch regressions.
+
+Acceptance criteria for removing Grunt
+1. All tests pass when run via the new Bun-native script locally.
+2. CI green on `main` for the Bun workflow that calls the new script.
+3. A PR that removes Grunt files and devDependency is merged with review and
+     no functional regressions.
+
+Follow-up work
+- Consider migrating HTML→PDF generation to Puppeteer for better rendering,
+    or to a JSON→PDF approach (pdfmake/react-pdf) for programmatic PDFs — this
+    is an orthogonal feature workstream and should be planned separately.
+
+
 ### Migration: JSON → PDF (post-migration)
 
 After the Bun migration and an initial refactor phase, plan a targeted
