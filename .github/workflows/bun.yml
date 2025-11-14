@@ -25,11 +25,11 @@ jobs:
       - name: Cache Bun and Node modules
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.bun
-            ~/.npm
-            node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}-${{ hashFiles('**/package.json') }}
+          paths:
+            - '~/.bun'
+            - '~/.npm'
+            - 'node_modules'
+          key: "${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}-${{ hashFiles('**/package.json') }}"
           restore-keys: |
             ${{ runner.os }}-bun-
 
@@ -41,7 +41,7 @@ jobs:
       - name: Run tests (deterministic — Bun-first)
         run: |
           HMR_NOW=2018-01-01 bun run test
-      - name: Run tests (deterministic — compatibility: Grunt)
+      - name: "Run tests (deterministic — compatibility: Grunt)"
         run: |
           HMR_NOW=2018-01-01 bunx grunt test
       - name: Run tests (deterministic — Node fallback)
@@ -70,11 +70,11 @@ jobs:
       - name: Cache Bun and Node modules
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.bun
-            ~/.npm
-            node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}-${{ hashFiles('**/package.json') }}
+          paths:
+            - '~/.bun'
+            - '~/.npm'
+            - 'node_modules'
+          key: "${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}-${{ hashFiles('**/package.json') }}"
           restore-keys: |
             ${{ runner.os }}-bun-
 
@@ -86,7 +86,7 @@ jobs:
       - name: Run tests (PDF path — Bun-first)
         run: |
           HMR_NOW=2018-01-01 bun run test
-      - name: Run tests (PDF path — compatibility: Grunt)
+      - name: "Run tests (PDF path — compatibility: Grunt)"
         run: |
           HMR_NOW=2018-01-01 bunx grunt test
       - name: Run tests (PDF path — Node fallback)
