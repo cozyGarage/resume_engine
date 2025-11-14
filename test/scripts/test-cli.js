@@ -24,7 +24,11 @@ describe('Testing CLI interface', function () {
     var title = args;
     it( 'Testing: "' + title + '"\n\n', function( done ) {
       try {
-        EXEC('hackmyresume ' + args, null, function(err,stdo,stde) {
+        // Run the local CLI via node to avoid relying on a globally-installed
+        // 'hackmyresume' binary or npm-provided PATH modifications. This makes
+        // the tests hermetic when run under Bun or other tools.
+        var cliPath = PATH.resolve(__dirname, '../../src/cli/index.js');
+        EXEC('node ' + cliPath + ' ' + args, null, function(err,stdo,stde) {
           var errCode = (err && err.code) || 0;
           errCode.should.equal( parseInt(expErr, 10) );
           done();

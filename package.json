@@ -8,7 +8,10 @@
   },
   "scripts": {
     "test": "grunt clean:test && mocha --exit",
-    "grunt": "grunt"
+    "grunt": "grunt",
+    "install:bun": "bun install",
+    "test:bun": "bunx grunt test",
+    "test:bun:mocha": "bunx mocha --exit"
   },
   "keywords": [
     "resume",
@@ -87,7 +90,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "chai": "*",
+  "chai": "4.3.7",
     "chai-as-promised": "^7.1.1",
     "dir-compare": "^1.4.0",
     "fresh-test-resumes": "^0.9.2",

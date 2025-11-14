@@ -58,7 +58,10 @@ FluentDate.fmt = function( dt, throws ) {
   if ((typeof dt === 'string') || dt instanceof String) {
     dt = dt.toLowerCase().trim();
     if (/^(present|now|current)$/.test(dt)) { // "Present", "Now"
-      return moment();
+      // Allow tests or environments to pin "now" with the HMR_NOW env var
+      // so duration calculations remain stable across time. If HMR_NOW is set
+      // to a parseable date, use it as the current date for "present".
+      return process.env.HMR_NOW ? moment(process.env.HMR_NOW) : moment();
     } else if (/^\D+\s+\d{4}$/.test(dt)) { // "Mar 2015"
       let left;
       const parts = dt.split(' ');
@@ -70,7 +73,8 @@ FluentDate.fmt = function( dt, throws ) {
     } else if (/^\s*\d{4}\s*$/.test(dt)) { // "2015"
       return moment(dt, 'YYYY');
     } else if (/^\s*$/.test(dt)) { // "", " "
-      return moment();
+      // Empty dates behave like "present"; respect HMR_NOW if provided.
+      return process.env.HMR_NOW ? moment(process.env.HMR_NOW) : moment();
     } else {
       const mt = moment(dt);
       if (mt.isValid()) {
@@ -83,7 +87,9 @@ FluentDate.fmt = function( dt, throws ) {
     }
   } else {
     if (!dt) {
-      return moment();
+      // Respect HMR_NOW for null/undefined dates as well so tests that pass
+      // null values get a deterministic "now" when the env var is set.
+      return process.env.HMR_NOW ? moment(process.env.HMR_NOW) : moment();
     } else if (dt.isValid && dt.isValid()) {
       return dt;
     }

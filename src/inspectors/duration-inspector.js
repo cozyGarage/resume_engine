@@ -28,9 +28,12 @@ module.exports = {
     // job -- it doesn't matter which.
     let new_e = hist.map(function( job ) {
       let obj = _.pick( job, [startKey, endKey] );
-      // Synthesize an end date if this is a "current" gig
-      if (!_.has(obj, endKey)) { obj[endKey] = 'current'; }
+      // Only process entries that have at least a start or end value. This
+      // avoids treating explicit null/empty start values as "current" jobs
+      // when no meaningful date information exists.
       if (obj && (obj[startKey] || obj[endKey])) {
+        // Synthesize an end date if this is a "current" gig (end missing)
+        if (!_.has(obj, endKey)) { obj[endKey] = 'current'; }
         obj = _.pairs(obj);
         obj[0][1] = FluentDate.fmt( obj[0][1] );
         if (obj.length > 1) {
