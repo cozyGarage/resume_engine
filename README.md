@@ -59,6 +59,42 @@ Alternately, install the latest bleeding-edge version (updated daily):
 [sudo] npm install hacksalot/hackmyresume#dev -g
 ```
 
+## Developer (Bun)
+
+If you're contributing or working on the project, Bun provides a fast
+install/runtime experience. The project supports running tests and development
+flows with Bun while retaining compatibility with the existing Grunt-based
+scripts.
+
+Quickstart (local dev):
+
+```bash
+# Install Bun (if not already installed)
+curl -fsSL https://bun.sh/install | bash
+# Restart your shell or add $HOME/.bun/bin to your PATH
+
+# Install dependencies with Bun
+bun install
+
+# Run the test suite in a deterministic way (pins "now")
+HMR_NOW=2018-01-01 bunx grunt test
+
+# Direct Bun test helpers (experimental, bypass Grunt)
+bun run test:ci        # same as above via npm script
+bun run test:bun:direct
+```
+
+Notes:
+- `HMR_NOW` pins time-sensitive tests to a historical baseline used by the
+  original test-suite (2018). This keeps tests deterministic across runs and
+  CI.
+- PDF generation still depends on external binaries (wkhtmltopdf, PhantomJS,
+  or WeasyPrint). In CI we install `wkhtmltopdf` to exercise PDF generation
+  paths; locally, install whichever engine you prefer.
+- We are in the process of migrating test invocation off Grunt. The
+  `test:bun:direct` script runs Mocha directly via Bun and serves as the
+  first step toward removing Grunt entirely.
+
 ## Installing PDF Support (optional)
 
 HackMyResume tries not to impose a specific PDF engine requirement on

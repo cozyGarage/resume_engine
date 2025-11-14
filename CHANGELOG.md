@@ -1,6 +1,26 @@
 CHANGELOG
 =========
 
+## v2.0.0
+
+*The 2.0.0 milestone marks the beginning of the Bun-era for HackMyResume: a
+tooling migration to Bun for faster installs and development iteration. This
+release starts a staged migration and CI modernization — see `Progress.md` for
+the migration case study and playbook.*
+
+### Migration notes
+
+- Introduced Bun-based CI workflows that install Bun and run the full test
+  suite with a pinned `HMR_NOW` to ensure deterministic results.
+- Added an optional CI job to install `wkhtmltopdf` so PDF generation is
+  exercised in CI.
+- Added developer scripts to `package.json` to make Bun-based test runs easy
+  (`test:ci`, `test:bun:direct`).
+
+More refactor and JSON→PDF migration work will follow in a subsequent
+development phase.
+
+
 ## v1.9.0-beta
 
 *Welcome to the first new version of HackMyResume in over a year. The purpose of
