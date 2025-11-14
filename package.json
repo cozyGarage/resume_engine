@@ -7,11 +7,13 @@
     "url": "https://github.com/hacksalot/HackMyResume.git"
   },
   "scripts": {
-    "test": "grunt clean:test && mocha --exit",
-    "grunt": "grunt",
-    "install:bun": "bun install",
-    "test:bun": "bunx grunt test",
-    "test:bun:mocha": "bunx mocha --exit"
+  "test": "grunt clean:test && mocha --exit",
+  "grunt": "grunt",
+  "install:bun": "bun install",
+  "test:bun": "bunx grunt test",
+  "test:bun:mocha": "bunx mocha --exit",
+  "test:ci": "HMR_NOW=2018-01-01 bunx grunt test",
+  "test:bun:direct": "HMR_NOW=2018-01-01 bunx mocha --exit"
   },
   "keywords": [
     "resume",

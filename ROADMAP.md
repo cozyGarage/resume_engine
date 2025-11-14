@@ -91,6 +91,21 @@ Investigate adding [**Scribus SLA**][scri] support ([#54][i54]).
 
 When released.
 
+### Migration: JSON → PDF (post-migration)
+
+After the Bun migration and an initial refactor phase, plan a targeted
+workstream to prototype converting one or more themes from HTML→PDF to a
+JSON→PDF pipeline (for example using `pdfmake` or `react-pdf`). This will be
+evaluated after CI is stable and the codebase no longer depends on Grunt.
+
+Rationale:
+- JSON→PDF removes the external binary dependency for PDF generation and
+    enables programmatic, data-driven layouts.
+- Start with a proof-of-concept for a single theme (e.g., `modern`) and
+    compare output to existing PDFs. If parity is acceptable, expand the
+    migration.
+
+
 ## Long-Term
 
 - TBD
