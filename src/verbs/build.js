@@ -17,20 +17,22 @@ const PATH           = require('path');
 const MKDIRP         = require('mkdirp');
 const extend         = require('extend');
 const parsePath      = require('parse-filepath');
-// no converter needed when only JRS is supported
-// const RConverter     = require('fresh-jrs-converter');
+const pathExists     = require('path-exists').sync;
 const HMSTATUS       = require('../core/status-codes');
 const HMEVENT        = require('../core/event-codes');
-const RTYPES         = {
-  JRS: require('../core/jrs-resume'),
-  FRESH: require('../core/fresh-resume')
-};
 const _opts          = require('../core/default-options');
-const ResumeConverter= require('fresh-jrs-converter');
 const JRSTheme       = require('../core/jrs-theme');
+const JRSResume      = require('../core/jrs-resume');
 const ResumeFactory  = require('../core/resume-factory');
 const _fmts          = require('../core/default-formats');
 const Verb           = require('../verbs/verb');
+
+const THEME_ALIASES = {
+  modern: 'jsonresume-theme-modern',
+  classy: 'jsonresume-theme-classy',
+  sceptile: 'jsonresume-theme-sceptile',
+  boilerplate: 'jsonresume-theme-boilerplate'
+};
 
 //const _err = null;
 //const _log = null;
@@ -57,7 +59,7 @@ module.exports = BuildVerb;
 
 
 /**
-Given a source resume in FRESH or JRS format, a destination resume path, and a
+Given a source resume (legacy FRESH sources are converted automatically), a destination resume path, and a
 theme file, generate 0..N resumes in the desired formats.
 @param src Path to the source JSON resume file: "rez/resume.json".
 @param dst An array of paths to the target resume file(s).
@@ -75,7 +77,7 @@ var _build = function( src, dst, opts ) {
 
   // Load input resumes as JSON...
   const sheetObjects = ResumeFactory.load(src, {
-    format: null, objectify: false, quit: true, inner: {
+    format: 'JRS', objectify: false, quit: true, inner: {
       sort: _opts.sort,
       private: _opts.private
     }
@@ -129,33 +131,18 @@ var _build = function( src, dst, opts ) {
   //# Merge input resumes, yielding a single source resume...
   let rez = null;
   if (sheets.length > 1) {
-    const isFRESH = !sheets[0].basics;
-    const mixed = _.any(sheets, function(s) { if (isFRESH) { return s.basics; } else { return !s.basics; } });
-    this.stat(HMEVENT.beforeMerge, { f: _.clone(sheetObjects), mixed });
-    if (mixed) {
-      this.err(HMSTATUS.mixedMerge);
-    }
+    this.stat(HMEVENT.beforeMerge, { f: _.clone(sheetObjects), mixed: false });
     rez = _.reduceRight(sheets, ( a, b ) => extend( true, b, a ));
     this.stat(HMEVENT.afterMerge, { r: rez });
   } else {
     rez = sheets[0];
   }
 
-  // Convert the merged source resume to the theme's format, if necessary.
-  // Determine the desired format based on the theme engine (jrs or fresh)
-  const toFormat = (theme && theme.engine === 'jrs') ? 'JRS' : 'FRESH';
-  // Use the converter when needed
-  const orgFormat = rez.meta && rez.meta.format && rez.meta.format.toLowerCase().startsWith('fresh') ? 'FRESH' : (rez.basics ? 'JRS' : 'UNK');
-  if (orgFormat !== toFormat && orgFormat !== 'UNK') {
-    // Convert to the desired format
-    rez = ResumeConverter[ `to${toFormat}` ]( rez );
-  }
-
   // Announce the theme
   this.stat(HMEVENT.applyTheme, {r: rez, theme});
 
-  // Load the resume into a FRESHResume or JRSResume object
-  _rezObj = new (RTYPES[ toFormat ])().parseJSON( rez, {private: _opts.private} );
+  // Load the resume into a JRSResume object
+  _rezObj = new JRSResume().parseJSON( rez, {private: _opts.private} );
 
   // Expand output resumes...
   const targets = _expand(dst, theme);
@@ -193,7 +180,7 @@ Prepare for a BUILD run.
 */
 var _prep = function( src, dst, opts ) {
   // Cherry-pick options //_opts = extend( true, _opts, opts );
-  _opts.theme = (opts.theme && opts.theme.toLowerCase().trim()) || 'modern';
+  _opts.theme = (opts.theme && opts.theme.trim()) || 'jsonresume-theme-modern';
   _opts.prettify = opts.prettify === true;
   _opts.private = opts.private === true;
   _opts.noescape = opts.noescape === true;
@@ -232,7 +219,7 @@ var _prep = function( src, dst, opts ) {
 Generate a single target resume such as "out/rez.html" or "out/rez.doc".
 TODO: Refactor.
 @param targInfo Information for the target resume.
-@param theme A FRESHTheme or JRSTheme object.
+@param theme A JRSTheme object.
 */
 var _single = function( targInfo, theme, finished ) {
 
@@ -255,8 +242,7 @@ var _single = function( targInfo, theme, finished ) {
 
     _opts.targets = finished;
 
-    // If targInfo.fmt.files exists, this format is backed by a document.
-    // Fluent/FRESH themes are handled here.
+  // If targInfo.fmt.files exists, this format is backed by a document.
     if (targInfo.fmt.files && targInfo.fmt.files.length) {
       theFormat = _fmts.filter( fmt => fmt.name === targInfo.fmt.outFormat)[0];
       MKDIRP.sync(PATH.dirname( f ));
@@ -312,7 +298,7 @@ generated directly from the resume model or from one of the theme's declared
 output formats. For example, the PNG format can be generated for any theme
 that declares an HTML format; the theme doesn't have to provide an explicit
 PNG template.
-@param theTheme A FRESHTheme or JRSTheme object.
+@param theTheme A JRSTheme object.
 */
 var _addFreebieFormats = function( theTheme ) {
   // Add freebie formats (JSON, YAML, PNG) every theme gets...
@@ -339,7 +325,7 @@ var _addFreebieFormats = function( theTheme ) {
 Expand output files. For example, "foo.all" should be expanded to
 ["foo.html", "foo.doc", "foo.pdf", "etc"].
 @param dst An array of output files as specified by the user.
-@param theTheme A FRESHTheme or JRSTheme object.
+@param theTheme A JRSTheme object.
 */
 var _expand = function( dst, theTheme ) {
 
@@ -371,75 +357,66 @@ var _expand = function( dst, theTheme ) {
 Verify the specified theme name/path.
 */
 var _verifyTheme = function( themeNameOrPath ) {
+  const cleanedInput = (themeNameOrPath || '').trim();
+  const candidates = _expandThemeCandidates(cleanedInput);
 
-  // First, see if this is one of the predefined FRESH themes. There are only a
-  // handful of these, but they may change over time, so we need to query
-  // the official source of truth: the fresh-themes repository, which mounts the
-  // themes conveniently by name to the module object, and which is embedded
-  // locally inside the HackMyResume installation.
-  let tFolder;
-  const themesObj = require('fresh-themes');
-  if (_.has(themesObj.themes, themeNameOrPath)) {
-    tFolder = PATH.join(
-      parsePath( require.resolve('fresh-themes') ).dirname,
-      '/themes/',
-      themeNameOrPath
-    );
-  } else {
-  // Otherwsie it's a path to an arbitrary FRESH or JRS theme sitting somewhere
-  // on the user's system (or, in the future, at a URI).
-    tFolder = PATH.resolve(themeNameOrPath);
+  for (const candidate of candidates) {
+    const resolved = _tryResolveTheme(candidate);
+    if (resolved) {
+      return resolved;
+    }
   }
 
-  // In either case, make sure the theme folder exists
-  const exists = require('path-exists').sync;
-  if (exists(tFolder)) {
-    return tFolder;
-  } else {
-    return {fluenterror: HMSTATUS.themeNotFound, data: _opts.theme};
+  return {fluenterror: HMSTATUS.themeNotFound, data: cleanedInput};
+};
+
+var _expandThemeCandidates = function(name) {
+  const trimmed = (name || '').trim();
+  const lower = trimmed.toLowerCase();
+  const candidates = [];
+
+  const normalized = lower.startsWith('npm:') ? trimmed.slice(4) : trimmed;
+  if (normalized) {
+    candidates.push(normalized);
+  }
+
+  if (THEME_ALIASES[lower]) {
+    candidates.push(THEME_ALIASES[lower]);
+  }
+
+  const isBareName = /^[a-z0-9_-]+$/.test(lower);
+  if (isBareName && !lower.startsWith('jsonresume-theme-')) {
+    candidates.push(`jsonresume-theme-${lower}`);
+  }
+
+  return _.uniq(candidates.filter(Boolean));
+};
+
+var _tryResolveTheme = function(candidate) {
+  if (!candidate) {
+    return null;
+  }
+
+  const candidatePath = PATH.resolve(candidate);
+  if (pathExists(candidatePath) && pathExists(PATH.join(candidatePath, 'package.json'))) {
+    return candidatePath;
+  }
+
+  try {
+    const pkgPath = require.resolve(PATH.join(candidate, 'package.json'));
+    return PATH.dirname(pkgPath);
+  } catch (err) {
+    return null;
   }
 };
 
 
 
 /**
-Load the specified theme, which could be either a FRESH theme or a JSON Resume
-theme (or both).
+Load the specified JSON Resume theme.
 */
 var _loadTheme = function( tFolder ) {
-  // Detect whether this is a FRESH theme (has theme.json) or a JRS theme
-  const FS = require('fs');
-  const themeJsonPath = PATH.join(tFolder, 'theme.json');
-  let theTheme;
-  if (FS.existsSync(themeJsonPath)) {
-    const FreshTheme = require('../core/fresh-theme');
-    theTheme = new FreshTheme().open(tFolder);
-  } else {
-    theTheme = new JRSTheme().open(tFolder);
-    theTheme.engine = 'jrs';
-  }
-
-  // Cache the theme object
+  const theTheme = new JRSTheme().open(tFolder);
   _opts.themeObj = theTheme;
   return theTheme;
 };
-
-
-// FOOTNOTES
-// ------------------------------------------------------------------------------
-// [^1] We don't know ahead of time whether this is a FRESH or JRS theme.
-//      However, all FRESH themes have a theme.json file, so we'll use that as a
-//      canary for now, as an interim solution.
-//
-//      Unfortunately, with the exception of FRESH's theme.json, both FRESH and
-//      JRS themes are free-form and don't have a ton of reliable distinguishing
-//      marks, which makes a simple task like ad hoc theme detection harder than
-//      it should be to do cleanly.
-//
-//      Another complicating factor is that it's possible for a theme to be BOTH.
-//      That is, a single set of theme files can serve as a FRESH theme -and- a
-//      JRS theme.
-//
-//      TODO: The most robust way to deal with all these issues is with a strong
-//      theme validator. If a theme structure validates as a particular theme
-//      type, then for all intents and purposes, it IS a theme of that type.

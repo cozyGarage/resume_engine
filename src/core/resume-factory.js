@@ -14,8 +14,8 @@ Definition of the ResumeFactory class.
 const FS              = require('fs');
 const HMS    = require('./status-codes');
 const HME             = require('./event-codes');
-const ResumeConverter = require('fresh-jrs-converter');
-const resumeDetect    = require('../utils/resume-detector');
+const ensureJrs       = require('../utils/ensure-jrs');
+const JRSResume       = require('../core/jrs-resume');
 require('string.prototype.startswith');
 
 
@@ -45,6 +45,7 @@ module.exports = {
 
   */
   load( sources, opts, emitter ) {
+    opts = opts || {};
     return sources.map( function(src) {
       return this.loadOne( src, opts, emitter );
     }
@@ -55,42 +56,36 @@ module.exports = {
   /** Load a single resume from disk.  */
   loadOne( src, opts, emitter ) {
 
-    let toFormat = opts.format;     // Can be null
+    opts = opts || {};
+    const desiredFormat = opts.format ? String(opts.format).toUpperCase().trim() : 'JRS';
+    if (desiredFormat && desiredFormat !== 'JRS') {
+      opts.format = 'JRS';
+    }
 
-    // Get the destination format. Can be 'fresh', 'jrs', or null/undefined.
-    toFormat && (toFormat = toFormat.toLowerCase().trim());
-
-    // Load and parse the resume JSON
     const info = _parse(src, opts, emitter);
     if (info.fluenterror) { return info; }
 
-    // Determine the resume format: FRESH or JRS
-    let { json } = info;
-    const orgFormat = resumeDetect(json);
-    if (orgFormat === 'unk') {
-      info.fluenterror = HMS.unknownSchema;
-      return info;
+    const normalized = ensureJrs(info.json);
+    if (normalized.detectedFormat === 'unk') {
+      return {
+        fluenterror: HMS.unknownSchema,
+        file: src
+      };
     }
 
-    // Convert between formats if necessary
-    if (toFormat && ( orgFormat !== toFormat )) {
-      json = ResumeConverter[ `to${toFormat.toUpperCase()}` ](json);
-    }
-
-    // Objectify the resume, that is, convert it from JSON to a FRESHResume
-    // or JRSResume object.
+    const objectify = opts.objectify !== false;
     let rez = null;
-    if (opts.objectify) {
-      const reqLib = `../core/${toFormat || orgFormat}-resume`;
-      const ResumeClass = require(reqLib);
-      rez = new ResumeClass().parseJSON( json, opts.inner );
+    if (objectify) {
+      rez = new JRSResume().parseJSON(normalized.json, opts.inner);
       rez.i().file = src;
     }
 
     return {
       file: src,
-      json: info.json,
-      rez
+      json: normalized.json,
+      rez,
+      format: normalized.detectedFormat,
+      wasConverted: normalized.wasConverted
     };
   }
 };
@@ -109,11 +104,7 @@ var _parse = function( fileName, opts, eve ) {
     // Parse the file
     eve && eve.stat(HME.beforeParse, { data: rawData });
     const ret = { json: JSON.parse( rawData ) };
-    const orgFormat =
-      ret.json.meta && ret.json.meta.format && ret.json.meta.format.startsWith('FRESH@')
-      ? 'fresh' : 'jrs';
-
-    eve && eve.stat(HME.afterParse, { file: fileName, data: ret.json, fmt: orgFormat });
+    eve && eve.stat(HME.afterParse, { file: fileName, data: ret.json });
     return ret;
   } catch (err) {
     // Can be ENOENT, EACCES, SyntaxError, etc.

@@ -9,22 +9,34 @@ Definition of the ResumeDetector class.
 @license MIT. See LICENSE.md for details.
 */
 
-module.exports = function( rez ) {
-  // If the resume has a meta.format field, honor it when possible
-  if (rez && rez.meta && rez.meta.format) {
+module.exports = function detectResumeFormat(rez) {
+  if (!rez || typeof rez !== 'object') {
+    return 'unk';
+  }
+
+  if (rez.meta && rez.meta.format) {
     const fmt = String(rez.meta.format).toLowerCase();
-    if (fmt === 'jrs' || fmt === 'jsonresume' || fmt === 'json-resume') {
+    if (fmt.startsWith('fresh')) {
+      return 'fresh';
+    }
+    if (
+      fmt === 'jrs' ||
+      fmt === 'jsonresume' ||
+      fmt === 'json-resume' ||
+      fmt.startsWith('jrs@')
+    ) {
       return 'jrs';
     }
-    // Unknown meta.format: return as-is so callers can decide
     return fmt;
   }
 
-  // JSON Resume (JRS) typically has a 'basics' top-level section
-  if (rez && rez.basics) {
+  if (rez.basics) {
     return 'jrs';
   }
 
-  // Fallback: unknown
+  if (rez.info || rez.employment || rez.service || rez.projects) {
+    return 'fresh';
+  }
+
   return 'unk';
 };

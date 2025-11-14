@@ -32,8 +32,9 @@ formats. */
 
 var _convert = function( srcs, dst, opts ) {
 
+  opts = opts || {};
+
   // If no source resumes are specified, error out
-  let fmtUp;
   if (!srcs || !srcs.length) {
     this.err(HMSTATUS.resumeNotFound, { quit: true });
     return null;
@@ -57,13 +58,9 @@ var _convert = function( srcs, dst, opts ) {
     this.err(HMSTATUS.inputOutputParity, { quit: true });
   }
 
-  // Validate the destination format (if specified)
-  //const targetVer = null;
-  if (opts.format) {
-    fmtUp = opts.format.trim().toUpperCase();
-    if (!_.contains(['JRS','JRS@1','JRS@edge'], fmtUp)) {
-      this.err(HMSTATUS.invalidSchemaVersion, {data: opts.format.trim(), quit: true});
-    }
+  const fmtUp = opts.format ? opts.format.trim().toUpperCase() : 'JRS';
+  if (!_.contains(['JRS','JRS@1','JRS@1.0','JRS@EDGE'], fmtUp)) {
+    this.err(HMSTATUS.invalidSchemaVersion, {data: opts.format || 'JRS', quit: true});
   }
     // freshVerRegex = require '../utils/fresh-version-regex'
     // matches = fmtUp.match freshVerRegex()
@@ -85,7 +82,7 @@ var _convert = function( srcs, dst, opts ) {
   const results = _.map(srcs, function( src, idx ) {
 
     // Convert each resume in turn
-    const r = _convertOne.call(this, src, dst, idx, fmtUp);
+  const r = _convertOne.call(this, src, dst, idx);
 
     // Handle conversion errors
     if (r.fluenterror) {
@@ -108,11 +105,11 @@ var _convert = function( srcs, dst, opts ) {
 
 
 /** Private workhorse method. Convert a single resume. */
-var _convertOne = function(src, dst, idx, targetSchema) {
+var _convertOne = function(src, dst, idx) {
 
   // Load the resume
   const rinfo = ResumeFactory.loadOne(src, {
-    format: null,
+    format: 'JRS',
     objectify: true,
     inner: {
       privatize: false
@@ -137,18 +134,10 @@ var _convertOne = function(src, dst, idx, targetSchema) {
   // Determine the resume's SOURCE format
   // TODO: replace with detector component
   const { rez } = rinfo;
-  let srcFmt = '';
-  if (rez.meta && rez.meta.format) { // normalized to JRS
-    srcFmt = 'JRS';
-  } else if (rez.basics) {
-    srcFmt = 'JRS';
-  } else {
-    rinfo.fluenterror = HMSTATUS.unknownSchema;
-    return rinfo;
-  }
+  const srcFmt = (rinfo && rinfo.format) ? rinfo.format.toUpperCase() : 'JRS';
 
   // Determine the TARGET format for the conversion
-  const targetFormat = targetSchema || 'JRS';
+  const targetFormat = 'JRS';
 
   // Fire the beforeConvert event
   this.stat(HMEVENT.beforeConvert, {
@@ -161,7 +150,7 @@ var _convertOne = function(src, dst, idx, targetSchema) {
 
   // Save it to the destination format
   try {
-    rez.saveAs(dst[idx], targetFormat);
+  rez.saveAs(dst[idx], targetFormat);
   } catch (err) {
     if (err.badVer) {
       return {fluenterror: HMSTATUS.invalidSchemaVersion, quit: true, data: err.badVer};
