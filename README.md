@@ -61,6 +61,48 @@ Alternately, install the latest bleeding-edge version (updated daily):
 
 ## Developer (Bun)
 
+## Programmatic API (Library usage)
+
+HackMyResume can be required and used programmatically from other projects or scripts. Below are quick examples of how to use the API in Bun or Node.js.
+
+Basic usage:
+
+```js
+// Bun/Node: require the package
+const HMR = require('hackmyresume'); // when installed as a package
+// Or when running from source:
+// const HMR = require('./src/index');
+
+// Analyze a resume programmatically
+const Analyze = HMR.verbs.analyze;
+const a = new Analyze();
+a.on('status', (s) => console.log('status:', s));
+a.invoke(['path/to/resume.json'], null, {}).then(results => {
+  console.log('analyze results:', results);
+});
+
+// Build a resume programmatically
+const Build = HMR.verbs.build;
+const b = new Build();
+b.invoke(['path/to/resume.json'], ['out/resume.html'], {theme: 'modern', pdf: 'none'}).then(result => {
+  console.log('build result:', result);
+});
+```
+
+Notes:
+- The programmatic API exposes key verbs as classes in `HMR.verbs` (build, analyze, validate, convert, new, peek).
+- Each verb is an instance of `Verb` and supports `invoke(...)` that returns a Promise; you can also subscribe to status & error events via `.on('status', ...)` and `.on('error', ...)`.
+
+Publishing as a package
+----------------------
+We prefer to ship the package in a Bun-friendly way while preserving npm compatibility. To publish a package, ensure the code and package.json `main` field point to `src/index.js` and follow your normal release steps:
+
+1. Update `version` in `package.json` and `CHANGELOG.md`.
+2. Build any required artifacts if necessary (we do not have a build step for source distribution).
+3. Publish to NPM (or GitHub Packages) `npm publish`.
+4. Optional: `bun publish` works as well for Bun users when available.
+
+When publishing, also ensure any lockfiles you want to use for reproducible installs are included or documented. We recommend `npm-shrinkwrap.json` for reproducible installs across CI.
 If you're contributing or working on the project, Bun provides a fast
 install/runtime experience. The project supports running tests and development
 flows with Bun while retaining compatibility with the existing Grunt-based
