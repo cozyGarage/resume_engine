@@ -1,4 +1,5 @@
 /* Programmatic API tests for HackMyResume */
+/* eslint-env mocha */
 
 const expect = require('chai').expect;
 const PATH = require('path');

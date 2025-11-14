@@ -1,6 +1,6 @@
 node_modules/
 doc/
-docs/
+# docs are included in repo for API/usage documentation (we track docs)
 local/
 npm-debug.log
 *.map
