@@ -41,8 +41,10 @@ From the repository root:
 git checkout migrate/bun
 # Install deps with Bun
 bun install
-# Run the full test suite with a pinned "now" to match historical test expectations
-HMR_NOW=2018-01-01 bunx grunt test
+# Run the full test suite with a pinned "now" to match historical test expectations (Bun-first)
+HMR_NOW=2018-01-01 bun run test
+# Node fallback (if Bun not available):
+# npm run test:node
 ```
 
 Notes about the HMR_NOW change
@@ -125,7 +127,7 @@ Detailed steps we took (chronological)
    passed (174 passing).
 
 Success criteria we used
-- Full test suite passes under Bun (same or better results than `npm test`).
+- Full test suite passes under Bun (same or better results than the Node fallback `npm run test:node`).
 - No destructive changes to runtime behavior (we added non-breaking env-var
   support for test determinism).
 - CI can be updated to reproduce the developer flow.

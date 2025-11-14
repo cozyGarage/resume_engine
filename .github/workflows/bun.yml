@@ -27,12 +27,15 @@ jobs:
           bun --version || true
           bun install
 
-      - name: Run tests (deterministic)
+      - name: Run tests (deterministic — Bun-first)
+        run: |
+          HMR_NOW=2018-01-01 bun run test
+      - name: Run tests (deterministic — compatibility: Grunt)
         run: |
           HMR_NOW=2018-01-01 bunx grunt test
-      - name: Run tests (deterministic via npm script)
+      - name: Run tests (deterministic — Node fallback)
         run: |
-          HMR_NOW=2018-01-01 npm test
+          HMR_NOW=2018-01-01 npm run test:node
 
   pdf:
     name: Run PDF tests (wkhtmltopdf)
@@ -58,9 +61,12 @@ jobs:
           bun --version || true
           bun install
 
-      - name: Run tests (PDF path)
+      - name: Run tests (PDF path — Bun-first)
+        run: |
+          HMR_NOW=2018-01-01 bun run test
+      - name: Run tests (PDF path — compatibility: Grunt)
         run: |
           HMR_NOW=2018-01-01 bunx grunt test
-      - name: Run tests (PDF path via npm script)
+      - name: Run tests (PDF path — Node fallback)
         run: |
-          HMR_NOW=2018-01-01 npm test
+          HMR_NOW=2018-01-01 npm run test:node

@@ -76,18 +76,17 @@ curl -fsSL https://bun.sh/install | bash
 # Install dependencies with Bun
 bun install
 
-# Run the test suite in a deterministic way (pins "now")
-HMR_NOW=2018-01-01 bunx grunt test
+# Run the test suite in a deterministic way (pins "now") — Bun-first
+HMR_NOW=2018-01-01 bun run test
 
-# Node/Bun native tests and lint (preferred for contributors)
-npm test                # runs 'clean:test' -> 'lint' -> mocha via bunx
+# Alternative fallback (Node only)
+npm run test:node        # runs 'clean:test' -> 'lint' -> mocha under Node (fallback)
 npm run lint            # run eslint via bunx
 npm run build           # run lint via npm script (replaces grunt build)
 npm run test:ci         # run the CI grunt-based test (keeps the old workflow if needed)
 
-# Direct Bun test helpers (experimental, bypass Grunt)
-bun run test:ci        # same as above via npm script
-bun run test:bun:direct
+# Direct Bun test helpers (experimental)
+bun run test:bun:direct   # bypass Grunt and invoke Mocha via bunx directly
 ```
 
 Notes:

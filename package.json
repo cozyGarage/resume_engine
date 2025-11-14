@@ -7,17 +7,18 @@
     "url": "https://github.com/hacksalot/HackMyResume.git"
   },
   "scripts": {
-  "test": "bun run test:node",
+  "test": "bun run test:bun:ci",
   "grunt": "grunt",
   "clean:test": "node scripts/clean-test-sandbox.js",
   "lint": "bunx eslint 'Gruntfile.js' 'src/**/*.js' 'test/*.js'",
   "build": "bun run lint",
-  "test:node": "bun run clean:test && bun run lint && HMR_NOW=2018-01-01 bunx mocha --exit",
+  "test:bun:ci": "bun run clean:test && bun run lint && HMR_NOW=2018-01-01 bunx mocha --exit",
+  "test:node": "node scripts/clean-test-sandbox.js && ./node_modules/.bin/eslint 'Gruntfile.js' 'src/**/*.js' 'test/*.js' && HMR_NOW=2018-01-01 ./node_modules/.bin/mocha --exit",
   "install:bun": "bun install",
   "test:bun": "bunx grunt test",
   "test:bun:mocha": "bunx mocha --exit",
   "test:ci": "HMR_NOW=2018-01-01 bunx grunt test",
-  "test:ci:node": "HMR_NOW=2018-01-01 npm test",
+  "test:ci:node": "HMR_NOW=2018-01-01 node ./node_modules/.bin/mocha --exit",
   "test:bun:direct": "HMR_NOW=2018-01-01 bunx mocha --exit",
   "test:ci:2025": "HMR_NOW=2025-11-14 bunx grunt test"
   },
@@ -44,7 +45,7 @@
     
   ],
   "license": "MIT",
-  "preferGlobal": "true",
+  "preferGlobal": true,
   "bugs": {
     "url": "https://github.com/hacksalot/HackMyResume/issues"
   },

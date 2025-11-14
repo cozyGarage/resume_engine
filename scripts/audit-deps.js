@@ -54,6 +54,6 @@ devDepsToPin.forEach(d => {
 console.log('\nSuggested immediate actions (safe, small):');
 console.log('- Pin wildcards and loose ranges (e.g., "*", "^x.x.x") in devDependencies such as `mocha`, `grunt`, or other task runner/test libs to the resolved versions shown above.');
 console.log('- For any package where resolved is UNKNOWN, run `bun install` locally and re-run this script to populate shrinkwrap/resolved versions.');
-console.log('- After pinning, run `bun install` and `bunx grunt test` (or `bunx mocha`) to verify behavior.');
+console.log('- After pinning, run `bun install` and `bun run test` (preferred) to verify behavior; or use `bunx grunt test` / `bunx mocha` for legacy compatibility.');
 
 process.exit(0);

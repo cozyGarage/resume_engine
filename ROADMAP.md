@@ -108,6 +108,7 @@ Goals & success criteria
 - At least one CI job exercises PDF generation with `wkhtmltopdf` installed.
 - A migration branch is merged with tests and docs updated; Grunt is
     deprecated and removable in a follow-up cleanup PR.
+ - The long-term aim is a Bun-first workflow (Bun as primary runtime/tooling). Node.js is retained only as a fallback option for environments where Bun is not available or incompatible.
 
 Milestones
 1. Prototype and get tests green under Bun (COMPLETE).
@@ -124,6 +125,7 @@ Milestones
 
 Detailed task list
  - Implemented `scripts/test` npm script that runs, in order:
+    (Bun-first):
     1. clean (remove sandbox temp directories)
     2. lint (eslint via bunx)
     3. test (mocha via bunx with `HMR_NOW` pinned)
@@ -131,7 +133,7 @@ Detailed task list
 - Replaced `package.json`'s `test` script to call the new script once tested (COMPLETE).
 
  - Update `.github/workflows/bun.yml` to call the new `test` script instead of
-    `bunx grunt test` and simplify the workflow by removing Grunt install. (IN-PROGRESS: CI now runs both Grunt and npm scripts to verify parity.)
+    `bunx grunt test` and simplify the workflow by removing Grunt install. (IN-PROGRESS: CI now runs Bun-first `bun run test` and Grunt compatibility checks to verify parity.)
 
 - Run tests locally using `bun run test:ci` and `bun run test:bun:direct` to
     validate parity.
