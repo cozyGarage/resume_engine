@@ -156,6 +156,57 @@ Follow-up work
     or to a JSON→PDF approach (pdfmake/react-pdf) for programmatic PDFs — this
     is an orthogonal feature workstream and should be planned separately.
 
+Audit-first recommendation
+
+Before removing Grunt or making sweeping script changes, perform a focused
+dependency audit. The audit will identify ESM-only packages (or packages
+whose latest versions are ESM) that can break CommonJS-based test harnesses
+when run with Bun or when modules are loaded via `require()`.
+
+Audit checklist (concrete)
+1. Run `bun install` and capture any runtime warnings/errors when executing
+    `bunx grunt test` or `bunx mocha`.
+2. Run `npm ls` (or `bun pm ls`) to get dependency trees; flag packages that
+    are known ESM-only (e.g., look for "type":"module" in package.json).
+3. For each flagged package, determine:
+    - Can we pin to a CJS-compatible older version? If yes, pin and test.
+    - If not, can we lazy-load the ESM package with dynamic `import()` in the
+      small codepath under test? If yes, create a compatibility shim.
+    - If neither option works, list it as a migration blocker and schedule a
+      refactor to ESM for that module (larger effort).
+4. Create a PR per group of package pins/shims so that changes are reviewable
+    and easily reversible.
+
+HMR_NOW guidance
+
+Recommendation: keep the default pinned `HMR_NOW=2018-01-01` for CI and the
+main project scripts until test data and expectations are updated. This
+ensures parity with historically authored tests and avoids churn during the
+tooling migration.
+
+If you want to evaluate behavior with a current date (2025), add a
+non-default script that runs the same test pipeline with `HMR_NOW=2025-11-14`.
+This lets you test current-date assumptions without changing CI or the main
+developer experience.
+
+Ordering: audit first, then Grunt→Bun migration
+
+Why audit first?
+- Auditing first reduces surprises: many test failures during runtime migration
+  stem from ESM-only deps or other package-level changes. If we migrate
+  Grunt before auditing, we risk spending effort on script conversion only to
+  be blocked by dependency incompatibilities.
+
+Practical flow
+1. Dependency audit (make small, reviewable changes: pins/shims).
+2. Update `package.json` with Bun-native scripts (clean, lint, test) and add
+    an experimental script that runs tests with a 2025 `HMR_NOW` for parity
+    checks.
+3. Update CI to call the new scripts and run the audit-fixed code.
+4. Remove Grunt devDependency and Gruntfile in a cleanup PR once CI is green
+    and developers are comfortable with the Bun-native workflow.
+
+
 
 ### Migration: JSON → PDF (post-migration)
 

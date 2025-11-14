@@ -13,7 +13,8 @@
   "test:bun": "bunx grunt test",
   "test:bun:mocha": "bunx mocha --exit",
   "test:ci": "HMR_NOW=2018-01-01 bunx grunt test",
-  "test:bun:direct": "HMR_NOW=2018-01-01 bunx mocha --exit"
+  "test:bun:direct": "HMR_NOW=2018-01-01 bunx mocha --exit",
+  "test:ci:2025": "HMR_NOW=2025-11-14 bunx grunt test"
   },
   "keywords": [
     "resume",
