@@ -50,7 +50,7 @@ Caching in CI
 -------------
 
 CI uses cache for Bun store & Node artifacts to speed up installs. If you
-want to force a fresh install locally for testing, remove `~/.bun` and
+want to force a  install locally for testing, remove `~/.bun` and
 `node_modules` before running `bun install` or `npm install`.
 
 3. Commit and push your changes.
