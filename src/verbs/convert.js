@@ -61,7 +61,7 @@ var _convert = function( srcs, dst, opts ) {
   //const targetVer = null;
   if (opts.format) {
     fmtUp = opts.format.trim().toUpperCase();
-    if (!_.contains(['FRESH','FRESCA','JRS','JRS@1','JRS@edge'], fmtUp)) {
+    if (!_.contains(['JRS','JRS@1','JRS@edge'], fmtUp)) {
       this.err(HMSTATUS.invalidSchemaVersion, {data: opts.format.trim(), quit: true});
     }
   }
@@ -138,8 +138,8 @@ var _convertOne = function(src, dst, idx, targetSchema) {
   // TODO: replace with detector component
   const { rez } = rinfo;
   let srcFmt = '';
-  if (rez.meta && rez.meta.format) { //&& rez.meta.format.substr(0, 5).toUpperCase() == 'FRESH'
-    srcFmt = 'FRESH';
+  if (rez.meta && rez.meta.format) { // normalized to JRS
+    srcFmt = 'JRS';
   } else if (rez.basics) {
     srcFmt = 'JRS';
   } else {
@@ -148,7 +148,7 @@ var _convertOne = function(src, dst, idx, targetSchema) {
   }
 
   // Determine the TARGET format for the conversion
-  const targetFormat = targetSchema || (srcFmt === 'JRS' ? 'FRESH' : 'JRS');
+  const targetFormat = targetSchema || 'JRS';
 
   // Fire the beforeConvert event
   this.stat(HMEVENT.beforeConvert, {

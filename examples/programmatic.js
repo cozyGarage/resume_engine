@@ -10,7 +10,7 @@ async function run() {
     const Analyze = HMR.verbs.analyze;
     const a = new Analyze();
     a.on('status', (info) => console.log('[analyze status]', info));
-    const analyzeRes = await a.invoke(['node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json'], null, {});
+  const analyzeRes = await a.invoke(['node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json'], null, {});
     console.log('Analyze result:', analyzeRes);
 
     // Example: Build an HTML resume programmatically (Bun-first)
@@ -18,7 +18,7 @@ async function run() {
     const b = new Build();
     b.on('status', (info) => console.log('[build status]', info));
     const buildRes = await b.invoke(
-      ['node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json'],
+  ['node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json'],
       ['test/sandbox/prog/jane-resume.html'],
       { theme: 'modern', pdf: 'none' }
     );

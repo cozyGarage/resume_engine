@@ -24,7 +24,7 @@ chai.config.includeStack = false;
 var _sheet;
 
 var opts = {
-  format: 'FRESH',
+  format: 'JRS',
   prettify: true,
   silent: false,
   assert: true  // Causes validation errors to throw exceptions
@@ -37,7 +37,7 @@ var opts2 = {
 };
 
 var sb = 'test/sandbox/';
-var ft = 'node_modules/fresh-test-resumes/src/fresh/';
+var ft = 'node_modules/fresh-test-resumes/src/jrs/';
 
 // Assemble an array of tests, taking the form of parameters we'll pass to
 // each of the defined HackMyResume verbs.

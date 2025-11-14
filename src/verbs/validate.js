@@ -36,7 +36,6 @@ var _validate = function(sources, unused, opts)  {
 
   const validator = require('is-my-json-valid');
   const schemas = {
-    fresh: require('fresh-resume-schema'),
     jars: require('../core/resume.json')
   };
 
@@ -79,7 +78,8 @@ var _validateOne = function(t, validator, schemas) {
 
     // If success, validate the resume against the schema
     if (!obj.ex) {
-      if (obj.json.basics) { ret.schema = 'jars'; } else { ret.schema = 'fresh'; }
+  // Default to new JSON Resume schema: 'jars'
+  ret.schema = 'jars';
       const validate = validator(schemas[ ret.schema ], // Note [1]
         {formats: { date: /^\d{4}(?:-(?:0[0-9]{1}|1[0-2]{1})(?:-[0-9]{2})?)?$/ }});
       ret.isValid = validate(obj.json);

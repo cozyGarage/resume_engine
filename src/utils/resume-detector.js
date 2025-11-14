@@ -10,8 +10,8 @@ Definition of the ResumeDetector class.
 */
 
 module.exports = function( rez ) {
-  if (rez.meta && rez.meta.format) { //&& rez.meta.format.substr(0, 5).toUpperCase() == 'FRESH'
-    return 'fresh';
+  if (rez.meta && rez.meta.format) { // Treat FRESH meta as JRS for normalization
+    return 'jrs';
   } else if (rez.basics) {
     return 'jrs';
   } else {

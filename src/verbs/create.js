@@ -38,6 +38,10 @@ var _create = function( src, dst, opts ) {
     return null;
   }
 
+  // Default to JRS if no format provided
+  opts = opts || {};
+  if (!opts.format) { opts.format = 'JRS'; }
+
   const results = _.map(src, function( t ) {
     if (opts.assert && this.hasError()) { return { }; }
     const r = _createOne.call(this, t, opts);

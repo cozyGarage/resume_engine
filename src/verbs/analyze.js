@@ -38,7 +38,7 @@ var _analyze = function( sources, dst, opts ) {
 
   const nlzrs = _loadInspectors();
   const results = _.map(sources, function(src) {
-    const r = ResumeFactory.loadOne(src, { format: 'FRESH', objectify: true, inner: {
+  const r = ResumeFactory.loadOne(src, { format: 'JRS', objectify: true, inner: {
       private: opts.private === true
     }
   }, this);
