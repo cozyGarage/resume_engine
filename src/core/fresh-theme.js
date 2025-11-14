@@ -34,7 +34,6 @@ class FRESHTheme {
 
   /* Open and parse the specified theme. */
   open( themeFolder ) {
-
     this.folder = themeFolder;
 
     // Set up a formats hash for the theme
@@ -53,8 +52,10 @@ class FRESHTheme {
       };
     }
 
-    // Move properties from the theme JSON file to the theme object
-    EXTEND(true, this, themeInfo.json);
+  // Move properties from the theme JSON file to the theme object
+  EXTEND(true, this, themeInfo.json);
+  // Default engine if not specified
+  this.engine = this.engine || 'underscore';
 
     // Check for an "inherits" entry in the theme JSON.
     if (this.inherits) {

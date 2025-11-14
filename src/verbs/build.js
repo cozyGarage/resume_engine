@@ -17,15 +17,16 @@ const PATH           = require('path');
 const MKDIRP         = require('mkdirp');
 const extend         = require('extend');
 const parsePath      = require('parse-filepath');
-const RConverter     = require('fresh-jrs-converter');
+// no converter needed when only JRS is supported
+// const RConverter     = require('fresh-jrs-converter');
 const HMSTATUS       = require('../core/status-codes');
 const HMEVENT        = require('../core/event-codes');
 const RTYPES         = {
-  FRESH: require('../core/fresh-resume'),
-  JRS: require('../core/jrs-resume')
+  JRS: require('../core/jrs-resume'),
+  FRESH: require('../core/fresh-resume')
 };
 const _opts          = require('../core/default-options');
-const FRESHTheme     = require('../core/fresh-theme');
+const ResumeConverter= require('fresh-jrs-converter');
 const JRSTheme       = require('../core/jrs-theme');
 const ResumeFactory  = require('../core/resume-factory');
 const _fmts          = require('../core/default-formats');
@@ -140,13 +141,14 @@ var _build = function( src, dst, opts ) {
     rez = sheets[0];
   }
 
-  // Convert the merged source resume to the theme's format, if necessary..
-  const orgFormat = rez.basics ? 'JRS' : 'FRESH';
-  const toFormat = theme.render ? 'JRS' : 'FRESH';
-  if (toFormat !== orgFormat) {
-    this.stat(HMEVENT.beforeInlineConvert);
-    rez = RConverter[ `to${toFormat}` ]( rez );
-    this.stat(HMEVENT.afterInlineConvert, { file: sheetObjects[0].file, fmt: toFormat });
+  // Convert the merged source resume to the theme's format, if necessary.
+  // Determine the desired format based on the theme engine (jrs or fresh)
+  const toFormat = (theme && theme.engine === 'jrs') ? 'JRS' : 'FRESH';
+  // Use the converter when needed
+  const orgFormat = rez.meta && rez.meta.format && rez.meta.format.toLowerCase().startsWith('fresh') ? 'FRESH' : (rez.basics ? 'JRS' : 'UNK');
+  if (orgFormat !== toFormat && orgFormat !== 'UNK') {
+    // Convert to the desired format
+    rez = ResumeConverter[ `to${toFormat}` ]( rez );
   }
 
   // Announce the theme
@@ -405,15 +407,17 @@ Load the specified theme, which could be either a FRESH theme or a JSON Resume
 theme (or both).
 */
 var _loadTheme = function( tFolder ) {
-
-  const themeJsonPath = PATH.join(tFolder, 'theme.json'); // [^1]
-  const exists = require('path-exists').sync;
-
-  // Create a FRESH or JRS theme object
-  const theTheme =
-    exists(themeJsonPath)
-    ? new FRESHTheme().open(tFolder)
-    : new JRSTheme().open(tFolder);
+  // Detect whether this is a FRESH theme (has theme.json) or a JRS theme
+  const FS = require('fs');
+  const themeJsonPath = PATH.join(tFolder, 'theme.json');
+  let theTheme;
+  if (FS.existsSync(themeJsonPath)) {
+    const FreshTheme = require('../core/fresh-theme');
+    theTheme = new FreshTheme().open(tFolder);
+  } else {
+    theTheme = new JRSTheme().open(tFolder);
+    theTheme.engine = 'jrs';
+  }
 
   // Cache the theme object
   _opts.themeObj = theTheme;
