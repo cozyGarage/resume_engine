@@ -1,7 +1,7 @@
 If you want to prepare for the eventual removal of Grunt, run the non-destructive helper script:
 
 ```bash
-./scripts/prepare-grunt-removal.sh
+./scripts/prepare-bunx-removal.sh
 ```
 
 This will print the checklist to perform the removal once CI parity is stable.
@@ -41,7 +41,7 @@ will reference your local installation (you may need to
 1. HackMyResume sources live in the [`/src`][src] folder.
 
 4. When you're ready to submit your changes, run `bun run test` to run the
-	HMR test suite (Bun-first). Use `bunx grunt test` or `npm run test:node` as
+	HMR test suite (Bun-first). Use `bunx bunx test` or `npm run test:node` as
 	fallback compatibility checks if needed. After a short transition period
 	and 3+ successful Bun-first CI runs, Grunt may be removed and contributors
 	should run `HMR_NOW=2018-01-01 bun run test` locally before submitting GitHub PRs.
@@ -59,7 +59,7 @@ want to force a fresh install locally for testing, remove `~/.bun` and
 
 
 [node]: https://nodejs.org/en/
-[grunt]: http://gruntjs.com/
+[bunx]: http://gruntjs.com/
 [hmr]: https://github.com/hacksalot/HackMyResume
 [src]: https://github.com/hacksalot/HackMyResume/tree/master/src
 [contrib]: https://github.com/hacksalot/HackMyResume/blob/master/CONTRIBUTING.md
