@@ -16,10 +16,10 @@ and ensures that your changes will be accepted once submitted.
 2. **Fork and clone** the HackMyResume project.
 3. Ideally, **create a new feature branch** (eg, `feat/new-awesome-feature` or
 similar; call it whatever you like) to perform your work in.
-4. **Install dependencies** by running `npm install` in the top-level
-HackMyResume folder.
+4. **Install dependencies** by running `bun install` in the top-level
+HackMyResume folder (preferred). If Bun is not available, run `npm install`.
 5. Make your **commits** as usual.
-6. **Verify** your changes locally with `grunt test`.
+6. **Verify** your changes locally with `bun run test` (Bun-first). You can also run `grunt test` as a compatibility check (fallback).
 7. **Push** your commits.
 7. **Submit a pull request** from your feature branch to the HackMyResume `dev`
 branch.

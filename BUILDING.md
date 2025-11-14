@@ -12,7 +12,7 @@ CoffeeScript and JavaScript. Setting up a build environment is easy:
 
 1. OS: Linux, OS X, or Windows
 
-2. Install [Node.js][node] and [Grunt][grunt].
+2. Install Bun (preferred). If Bun is unavailable, install [Node.js][node] and [Grunt][grunt].
 
 
 ## Set up a build environment ###
@@ -21,11 +21,8 @@ CoffeeScript and JavaScript. Setting up a build environment is easy:
 
 2. Clone your fork locally.
 
-3. From within the top-level HackMyResume folder, run `npm install` to install
-project dependencies.
-
-4. Create a new branch, based on the latest HackMyResume `dev` branch, to
-contain your work.
+3. From within the top-level HackMyResume folder, run `bun install` to install
+project dependencies (preferred). If Bun is unavailable, run `npm install`.
 
 5. Run `npm link` in the HackMyResume folder so that the `hackmyresume` command
 will reference your local installation (you may need to
