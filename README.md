@@ -79,6 +79,12 @@ bun install
 # Run the test suite in a deterministic way (pins "now")
 HMR_NOW=2018-01-01 bunx grunt test
 
+# Node/Bun native tests and lint (preferred for contributors)
+npm test                # runs 'clean:test' -> 'lint' -> mocha via bunx
+npm run lint            # run eslint via bunx
+npm run build           # run lint via npm script (replaces grunt build)
+npm run test:ci         # run the CI grunt-based test (keeps the old workflow if needed)
+
 # Direct Bun test helpers (experimental, bypass Grunt)
 bun run test:ci        # same as above via npm script
 bun run test:bun:direct

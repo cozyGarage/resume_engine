@@ -30,6 +30,9 @@ jobs:
       - name: Run tests (deterministic)
         run: |
           HMR_NOW=2018-01-01 bunx grunt test
+      - name: Run tests (deterministic via npm script)
+        run: |
+          HMR_NOW=2018-01-01 npm test
 
   pdf:
     name: Run PDF tests (wkhtmltopdf)
@@ -58,3 +61,6 @@ jobs:
       - name: Run tests (PDF path)
         run: |
           HMR_NOW=2018-01-01 bunx grunt test
+      - name: Run tests (PDF path via npm script)
+        run: |
+          HMR_NOW=2018-01-01 npm test

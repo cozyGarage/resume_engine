@@ -123,15 +123,15 @@ Milestones
      remove the Grunt devDependency in a follow-up PR (POST-MIGRATION).
 
 Detailed task list
-- Implement `scripts/test` npm script that runs, in order:
+ - Implemented `scripts/test` npm script that runs, in order:
     1. clean (remove sandbox temp directories)
     2. lint (eslint via bunx)
     3. test (mocha via bunx with `HMR_NOW` pinned)
 
-- Replace `package.json`'s `test` script to call the new script once tested.
+- Replaced `package.json`'s `test` script to call the new script once tested (COMPLETE).
 
-- Update `.github/workflows/bun.yml` to call the new `test` script instead of
-    `bunx grunt test` and simplify the workflow by removing Grunt install.
+ - Update `.github/workflows/bun.yml` to call the new `test` script instead of
+    `bunx grunt test` and simplify the workflow by removing Grunt install. (IN-PROGRESS: CI now runs both Grunt and npm scripts to verify parity.)
 
 - Run tests locally using `bun run test:ci` and `bun run test:bun:direct` to
     validate parity.

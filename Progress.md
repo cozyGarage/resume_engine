@@ -21,6 +21,7 @@ Files changed (summary)
 
 - `package.json` — added Bun helper scripts (non-destructive).
 - `test/scripts/test-cli.js` — run local CLI via node in tests.
+- `scripts/clean-test-sandbox.js` — Node helper to clean the test sandbox; mirrors the Grunt 'clean:test' task for Node-based tests.
 - `src/core/fluent-date.js` — respect `HMR_NOW` for deterministic "now" handling.
 - `src/inspectors/duration-inspector.js` — refined duration calculations for null/empty dates.
 
@@ -59,7 +60,7 @@ Next steps (recommended)
 2. Audit dependencies: pin packages that are ESM-only or otherwise incompatible with CommonJS usage under Bun (we already pinned `chai@4.3.7` earlier during prototyping).
 3. Decide on long-term strategy:
    - Minimal: Continue using Bun for local development and CI while keeping backward-compatibility with npm for users.
-   - Moderate: Remove Grunt and convert tasks to lightweight npm/Bun scripts.
+  - Moderate: Remove Grunt and convert tasks to lightweight npm/Bun scripts (we've started this by adding Node-based `clean:test`, `lint`, `build`, and `test` scripts).
    - Aggressive: Migrate codebase to ESM and modernize generators (larger effort).
 4. Remove the `HMR_NOW` "shim" only after tests are updated to be deterministic without it.
 
