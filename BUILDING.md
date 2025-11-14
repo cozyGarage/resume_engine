@@ -40,11 +40,11 @@ will reference your local installation (you may need to
 
 1. HackMyResume sources live in the [`/src`][src] folder.
 
-2. When you're ready to submit your changes, run `bun run test` to run the
-	HMR test suite in Bun. You can run `bunx grunt test` as a compatibility
-	check or `npm run test:node` for the Node fallback. After a short
-	transition period and several successful Bun-first CI runs (3+), Grunt
-	will be removed and `bunx grunt test` will no longer be required.
+4. When you're ready to submit your changes, run `bun run test` to run the
+	HMR test suite (Bun-first). Use `bunx grunt test` or `npm run test:node` as
+	fallback compatibility checks if needed. After a short transition period
+	and 3+ successful Bun-first CI runs, Grunt may be removed and contributors
+	should run `HMR_NOW=2018-01-01 bun run test` locally before submitting GitHub PRs.
 
 Caching in CI
 -------------

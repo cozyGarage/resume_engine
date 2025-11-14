@@ -200,7 +200,8 @@ package.json or other NPM/Node infrastructure.
 
 To use HackMyResume you'll need to create a valid resume in either
 [FRESH][fresca] or [JSON Resume][6] format. Then you can start using the command
-line tool. There are five basic commands you should be aware of:
+line tool or the programmatic API. See `docs/USAGE.md` for a full overview and
+examples for the CLI and programmatic API.
 
 - **build** generates resumes in HTML, Word, Markdown, PDF, and other formats.
 Use it when you need to submit, upload, print, or email resumes in specific

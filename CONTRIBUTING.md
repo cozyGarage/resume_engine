@@ -21,8 +21,7 @@ HackMyResume folder (preferred). If Bun is not available, run `npm install`.
 5. Make your **commits** as usual.
 6. **Verify** your changes locally with `bun run test` (Bun-first). You can also run `bunx grunt test` as a compatibility check (fallback) or `npm run test:node` for Node-only verification. After 3 successful Bun-first CI runs we plan to remove the Grunt compatibility path entirely. Use `./scripts/prepare-grunt-removal.sh` to get a checklist that helps prepare the removal PR when you're ready.
 7. **Push** your commits.
-7. **Submit a pull request** from your feature branch to the HackMyResume `dev`
-branch.
+7. **Submit a pull request** from your feature branch to the HackMyResume `master` branch. If you are targeting an alternate development branch, please create PRs there first per team policy.
 8. We'll typically **respond** within 24 hours.
 9. Your awesome changes will be **merged** after verification.
 
