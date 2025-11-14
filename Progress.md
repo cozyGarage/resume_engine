@@ -59,6 +59,7 @@ Notes about the HMR_NOW change
 Next steps (recommended)
 
 1. CI: Add a GitHub Actions workflow that installs Bun and runs the test suite with `HMR_NOW=2018-01-01`. Include caching for Bun's package cache and bun.lockb if you convert to Bun lock.
+  - We added the cache step to `.github/workflows/bun.yml`. Also see `scripts/prepare-grunt-removal.sh` for a non-destructive helper that helps prepare the Grunt removal patch.
 2. Audit dependencies: pin packages that are ESM-only or otherwise incompatible with CommonJS usage under Bun (we already pinned `chai@4.3.7` earlier during prototyping).
 3. Decide on long-term strategy:
    - Minimal: Continue using Bun for local development and CI while keeping backward-compatibility with npm for users.

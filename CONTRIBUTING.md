@@ -19,7 +19,7 @@ similar; call it whatever you like) to perform your work in.
 4. **Install dependencies** by running `bun install` in the top-level
 HackMyResume folder (preferred). If Bun is not available, run `npm install`.
 5. Make your **commits** as usual.
-6. **Verify** your changes locally with `bun run test` (Bun-first). You can also run `grunt test` as a compatibility check (fallback).
+6. **Verify** your changes locally with `bun run test` (Bun-first). You can also run `bunx grunt test` as a compatibility check (fallback) or `npm run test:node` for Node-only verification. After 3 successful Bun-first CI runs we plan to remove the Grunt compatibility path entirely. Use `./scripts/prepare-grunt-removal.sh` to get a checklist that helps prepare the removal PR when you're ready.
 7. **Push** your commits.
 7. **Submit a pull request** from your feature branch to the HackMyResume `dev`
 branch.

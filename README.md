@@ -139,8 +139,22 @@ Notes:
   or WeasyPrint). In CI we install `wkhtmltopdf` to exercise PDF generation
   paths; locally, install whichever engine you prefer.
 - We are in the process of migrating test invocation off Grunt. The
-  `test:bun:direct` script runs Mocha directly via Bun and serves as the
-  first step toward removing Grunt entirely.
+ - We are in the process of migrating test invocation off Grunt. The
+   `test:bun:direct` script runs Mocha directly via Bun and serves as the
+   first step toward removing Grunt entirely. The pipeline is configured to
+   run both Bun-first and legacy Grunt compatibility steps; after a
+   sufficient number of successful Bun-first CI runs (3+), Grunt will be
+   removed from the repository and the fallback scripts will be removed as
+   part of a follow-up PR.
+
+CI caching
+----------
+
+We added caching for the Bun runtime and Node artifacts in CI to speed
+up installs. GitHub Actions now caches the Bun store (~/.bun) and NPM
+cache/node_modules using the repository's `bun.lockb` and `package.json`
+as cache keys. If you want to reproduce a clean install locally, remove
+your `~/.bun` directory and `node_modules` to force a fresh install.
 
 ## Installing PDF Support (optional)
 

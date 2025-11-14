@@ -1,3 +1,11 @@
+If you want to prepare for the eventual removal of Grunt, run the non-destructive helper script:
+
+```bash
+./scripts/prepare-grunt-removal.sh
+```
+
+This will print the checklist to perform the removal once CI parity is stable.
+
 Building
 ========
 
@@ -12,7 +20,7 @@ CoffeeScript and JavaScript. Setting up a build environment is easy:
 
 1. OS: Linux, OS X, or Windows
 
-2. Install Bun (preferred). If Bun is unavailable, install [Node.js][node] and [Grunt][grunt].
+2. Install Bun (preferred). If Bun is unavailable, install [Node.js][node]. Grunt is currently retained for compatibility but will be removed after a short transition period once CI runs are proving stable.
 
 
 ## Set up a build environment ###
@@ -32,8 +40,18 @@ will reference your local installation (you may need to
 
 1. HackMyResume sources live in the [`/src`][src] folder.
 
-2. When you're ready to submit your changes, run `grunt test` to run the HMR
-test suite. Fix any errors that occur.
+2. When you're ready to submit your changes, run `bun run test` to run the
+	HMR test suite in Bun. You can run `bunx grunt test` as a compatibility
+	check or `npm run test:node` for the Node fallback. After a short
+	transition period and several successful Bun-first CI runs (3+), Grunt
+	will be removed and `bunx grunt test` will no longer be required.
+
+Caching in CI
+-------------
+
+CI uses cache for Bun store & Node artifacts to speed up installs. If you
+want to force a fresh install locally for testing, remove `~/.bun` and
+`node_modules` before running `bun install` or `npm install`.
 
 3. Commit and push your changes.
 
