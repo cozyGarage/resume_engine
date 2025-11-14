@@ -59,6 +59,9 @@ Alternately, install the latest bleeding-edge version (updated daily):
 [sudo] npm install hacksalot/hackmyresume#dev -g
 ```
 
+By default we publish stable releases on the `master` branch. Use the `#dev`
+branch if you want the latest day-to-day updates.
+
 ## Developer (Bun)
 
 ## Programmatic API (Library usage)

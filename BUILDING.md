@@ -55,7 +55,7 @@ want to force a fresh install locally for testing, remove `~/.bun` and
 
 3. Commit and push your changes.
 
-4. Submit a pull request targeting the HackMyResume `dev` branch.
+4. Submit a pull request targeting the HackMyResume `master` branch.
 
 
 [node]: https://nodejs.org/en/

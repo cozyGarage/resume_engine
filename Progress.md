@@ -1,7 +1,7 @@
 PROGRESS REPORT — BUN MIGRATION PROTOTYPE
 
 Date: 2025-11-14
-Branch: migrate/bun
+Branch: master (previously migrate/bun)
 
 What I did
 
