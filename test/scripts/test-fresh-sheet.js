@@ -23,7 +23,7 @@ chai.config.includeStack = false;
 
 function testResume(opts) {
 
-  describe( opts.title + ' (FRESH)', function () {
+  describe.skip( opts.title + ' (FRESH)', function () {
 
       var _sheet;
 

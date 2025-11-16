@@ -91,22 +91,31 @@ var registerPartials = function(format, theme) {
 
   if (_.contains( ['html','doc','md','txt','pdf'], format )) {
 
-    // Locate the global partials folder
-    const partialsFolder = PATH.join(
-      parsePath( require.resolve('fresh-themes') ).dirname,
-      '/partials/',
-      format === 'pdf' ? 'html' : format
-    );
+    // Locate the global partials folder (fresh-themes was used previously).
+    let partialsFolder = null;
+    try {
+      partialsFolder = PATH.join(
+        parsePath( require.resolve('fresh-themes') ).dirname,
+        '/partials/',
+        format === 'pdf' ? 'html' : format
+      );
+    } catch (e) {
+      // If 'fresh-themes' isn't present, we just skip global partials and
+      // register theme-specific partials only.
+      partialsFolder = null;
+    }
 
     // Register global partials in the /partials/[format] folder
     // TODO: Only do this once per HMR invocation.
-    _.each(READFILES( partialsFolder ), function( el ) {
+    if (partialsFolder) {
+      _.each(READFILES( partialsFolder ), function( el ) {
       const name = SLASH(PATH.relative( partialsFolder, el ).replace(/\.(?:html|xml|hbs|md|txt)$/i, ''));
       const tplData = FS.readFileSync(el, 'utf8');
       const compiledTemplate = HANDLEBARS.compile(tplData);
       HANDLEBARS.registerPartial(name, compiledTemplate);
       return theme.partialsInitialized = true;
-    });
+      });
+    }
   }
 
   // Register theme-specific partials

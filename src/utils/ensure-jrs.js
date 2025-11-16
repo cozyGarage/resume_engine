@@ -1,4 +1,9 @@
-const ResumeConverter = require('fresh-jrs-converter');
+let ResumeConverter;
+try {
+  ResumeConverter = require('fresh-jrs-converter');
+} catch (e) {
+  ResumeConverter = null;
+}
 const detectFormat = require('./resume-detector');
 
 function ensureMeta(resumeJson, force) {
@@ -24,6 +29,9 @@ module.exports = function ensureJrs(resumeJson) {
   const detectedFormat = detectFormat(resumeJson);
 
   if (detectedFormat === 'fresh') {
+    if (!ResumeConverter) {
+      throw new Error('FRESH support has been removed: automatic conversion to JRS is not available. Please convert the resume to JSON Resume (JRS) format externally or reinstall "fresh-jrs-converter".');
+    }
     const converted = ResumeConverter.toJRS(resumeJson);
     return {
       json: ensureMeta(converted, true),

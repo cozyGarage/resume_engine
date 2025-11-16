@@ -18,7 +18,12 @@ const extend = require('extend');
 let validator = require('is-my-json-valid');
 const _ = require('underscore');
 const PATH = require('path');
-const CONVERTER = require('fresh-jrs-converter');
+let CONVERTER = null;
+try {
+  CONVERTER = require('fresh-jrs-converter');
+} catch (e) {
+  CONVERTER = null;
+}
 
 
 /**
@@ -126,6 +131,9 @@ class JRSResume {
       this.imp.file = filename || this.imp.file;
       FS.writeFileSync( this.imp.file, this.stringify(), 'utf8' );
     } else {
+      if (!CONVERTER) {
+        throw new Error('FRESH conversion has been removed from this build. Please convert your JRS file to FRESH using an external converter if you need a FRESH file.');
+      }
       const newRep = CONVERTER.toFRESH(this);
       const stringRep = CONVERTER.toSTRING(newRep);
       FS.writeFileSync(filename, stringRep, 'utf8');
@@ -292,7 +300,7 @@ JRSResume.initClass();
 
 
 /** Get the default (empty) sheet. */
-JRSResume.default = () => new JRSResume().parseJSON(require('fresh-resume-starter').jrs);
+JRSResume.default = () => new JRSResume().parseJSON(require('./jrs-starter').jrs);
 
 
 
