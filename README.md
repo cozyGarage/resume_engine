@@ -108,7 +108,7 @@ We prefer to ship the package in a Bun-friendly way while preserving npm compati
 When publishing, also ensure any lockfiles you want to use for reproducible installs are included or documented. We recommend `npm-shrinkwrap.json` for reproducible installs across CI.
 If you're contributing or working on the project, Bun provides a fast
 install/runtime experience. The project supports running tests and development
-flows with Bun while retaining compatibility with the existing Grunt-based
+flows with Bun while retaining compatibility with the existing legacy Grunt
 scripts.
 
 Quickstart (local dev):
@@ -127,8 +127,8 @@ HMR_NOW=2018-01-01 bun run test
 # Alternative fallback (Node only)
 npm run test:node        # runs 'clean:test' -> 'lint' -> mocha under Node (fallback)
 npm run lint            # run eslint via bunx
-npm run build           # run lint via npm script (replaces grunt build)
-npm run test:ci         # run the CI grunt-based test (keeps the old workflow if needed)
+npm run build           # run lint via npm script (replaces bunx build)
+npm run test:ci         # run the CI bunx-based test (keeps the old workflow if needed)
 
 # Direct Bun test helpers (experimental)
 bun run test:bun:direct   # bypass Grunt and invoke Mocha via bunx directly
