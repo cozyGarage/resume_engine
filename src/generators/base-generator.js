@@ -1,37 +1,30 @@
-/*
- * decaffeinate suggestions:
- * DS206: Consider reworking classes to avoid initClass
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+/**
+ * Definition of the BaseGenerator class.
+ * @module generators/base-generator
+ * @license MIT. See LICENSE.md for details.
  */
-/**
-Definition of the BaseGenerator class.
-@module generators/base-generator
-@license MIT. See LICENSE.md for details.
-*/
 
+'use strict';
+
+const codes = require('../core/status-codes');
 
 /**
-The BaseGenerator class is the root of the generator hierarchy. Functionality
-common to ALL generators lives here.
-*/
+ * The BaseGenerator class is the root of the generator hierarchy.
+ * Functionality common to ALL generators lives here.
+ * @class BaseGenerator
+ */
+class BaseGenerator {
+  /**
+   * Create a new base generator.
+   * @param {string} format - The output format
+   */
+  constructor(format) {
+    this.format = format;
+    /** Status codes */
+    this.codes = codes;
+    /** Generator options */
+    this.opts = {};
+  }
+}
 
-let BaseGenerator;
-module.exports = (BaseGenerator = (function() {
-  BaseGenerator = class BaseGenerator {
-    static initClass() {
-  
-      /** Status codes. */
-      this.prototype.codes = require('../core/status-codes');
-  
-      /** Generator options. */
-      this.prototype.opts = { };
-    }
-
-    /** Base-class initialize. */
-    constructor( format ) {
-      this.format = format;
-    }
-  };
-  BaseGenerator.initClass();
-  return BaseGenerator;
-})());
+module.exports = BaseGenerator;

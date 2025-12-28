@@ -1,15 +1,10 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 /**
-Implementation of the 'convert' verb for HackMyResume.
-@module verbs/convert
-@license MIT. See LICENSE.md for details.
-*/
+ * Implementation of the 'convert' verb for HackMyResume.
+ * @module verbs/convert
+ * @license MIT. See LICENSE.md for details.
+ */
 
-
+'use strict';
 
 const ResumeFactory = require('../core/resume-factory');
 const Verb = require('../verbs/verb');
@@ -17,122 +12,127 @@ const HMSTATUS = require('../core/status-codes');
 const HMEVENT = require('../core/event-codes');
 const detectResumeFormat = require('../utils/resume-detector');
 
-
+// Supported JRS schema versions
+const VALID_JRS_FORMATS = new Set(['JRS', 'JRS@1', 'JRS@1.0', 'JRS@EDGE']);
 
 /**
- * ConvertVerb — Converts resume files between JSON Resume (JRS) and the
- * legacy FRESH format (if conversion utilities are available).
+ * ConvertVerb — Converts resume files between formats.
+ * Currently converts to JSON Resume (JRS) format.
+ * @class ConvertVerb
+ * @extends Verb
  */
 class ConvertVerb extends Verb {
-  constructor() { super('convert', _convert); }
+  /**
+   * Create a new convert verb.
+   */
+  constructor() {
+    super('convert', convert);
+  }
 }
 
 module.exports = ConvertVerb;
 
-
-
 /**
- * Private workhorse method. Convert/reserialize JRS or legacy
- * resumes into the requested target format (JRS by default).
+ * Convert verb implementation.
+ * Convert/reserialize resumes into the requested target format.
+ * @param {Array<string>} srcs - Source resume paths
+ * @param {Array<string>} dst - Destination resume paths
+ * @param {Object} [opts={}] - Conversion options
+ * @returns {Array|null} Array of conversion results or null on error
  */
-const _convert = function(srcs, dst, opts) {
-
-  opts = opts || {};
-
+function convert(srcs, dst, opts = {}) {
   // If no source resumes are specified, error out
-  if (!srcs || !srcs.length) {
+  if (!srcs?.length) {
     this.err(HMSTATUS.resumeNotFound, { quit: true });
     return null;
   }
 
-  // If no destination resumes are specified, error out except for the special
-  // case of two resumes:
-  //   hackmyresume CONVERT r1.json r2.json
-  if (!dst || !dst.length) {
+  // Handle destination logic
+  if (!dst?.length) {
     if (srcs.length === 1) {
+      // Single source with no destination is an error
       this.err(HMSTATUS.inputOutputParity, { quit: true });
     } else if (srcs.length === 2) {
-      dst = dst || []; dst.push( srcs.pop() );
+      // Two sources: last one becomes destination (hackmyresume CONVERT r1.json r2.json)
+      dst = dst ?? [];
+      dst.push(srcs.pop());
     } else {
       this.err(HMSTATUS.inputOutputParity, { quit: true });
     }
   }
 
   // Different number of source and dest resumes? Error out.
-  if (srcs && dst && srcs.length && dst.length && (srcs.length !== dst.length)) {
+  if (srcs?.length && dst?.length && srcs.length !== dst.length) {
     this.err(HMSTATUS.inputOutputParity, { quit: true });
   }
 
-  const fmtUp = opts.format ? opts.format.trim().toUpperCase() : 'JRS';
-  if (!['JRS', 'JRS@1', 'JRS@1.0', 'JRS@EDGE'].includes(fmtUp)) {
-    this.err(HMSTATUS.invalidSchemaVersion, {data: opts.format || 'JRS', quit: true});
+  // Validate format option
+  const fmtUp = opts.format?.trim().toUpperCase() || 'JRS';
+  if (!VALID_JRS_FORMATS.has(fmtUp)) {
+    this.err(HMSTATUS.invalidSchemaVersion, { data: opts.format || 'JRS', quit: true });
   }
 
-  // If any errors have occurred this early, we're done.
+  // If any errors have occurred this early, we're done
   if (this.hasError()) {
     this.reject(this.errorCode);
     return null;
   }
 
-  // Map each source resume to the converted destination resume
-  const results = srcs.map( (src, idx) => {
-    // Convert each resume in turn
-    const r = _convertOne.call(this, src, dst, idx);
-    // Handle conversion errors
-    if (r && r.fluenterror) {
+  // Convert each source resume
+  const results = srcs.map((src, idx) => {
+    const r = convertOne.call(this, src, dst, idx);
+    if (r?.fluenterror) {
       r.quit = opts.assert;
       this.err(r.fluenterror, r);
     }
     return r;
   });
 
-
   if (this.hasError() && !opts.assert) {
     this.reject(results);
   } else if (!this.hasError()) {
     this.resolve(results);
   }
+
   return results;
-};
+}
 
-
-
-/** Private workhorse method. Convert a single resume. */
-/** Convert a single resume. */
-const _convertOne = function(src, dst, idx) {
-
+/**
+ * Convert a single resume.
+ * @param {string} src - Source file path
+ * @param {Array<string>} dst - Destination file paths
+ * @param {number} idx - Index into dst array
+ * @returns {Object} Resume object or error object
+ */
+function convertOne(src, dst, idx) {
   // Load the resume
   const rinfo = ResumeFactory.loadOne(src, {
     format: 'JRS',
     objectify: true,
-    inner: {
-      privatize: false
-    }
-  }
-  );
+    inner: { privatize: false }
+  });
 
-  // If a load error occurs, report it and move on to the next file (if any)
+  // If a load error occurs, report it and return
   if (rinfo.fluenterror) {
     this.stat(HMEVENT.beforeConvert, {
-      srcFile: src, //rinfo.file
+      srcFile: src,
       srcFmt: '???',
       dstFile: dst[idx],
       dstFmt: '???',
       error: true
-    }
-    );
-    //@err rinfo.fluenterror, rinfo
+    });
     return rinfo;
   }
 
-  // Determine the resume's SOURCE format using the detector component
   const { rez } = rinfo;
+
+  // Determine the resume's SOURCE format using the detector component
   const detectedFormat = detectResumeFormat(rez);
   const srcFmt = detectedFormat !== 'unk'
     ? detectedFormat.toUpperCase()
-    : ((rinfo && rinfo.format) ? rinfo.format.toUpperCase() : 'JRS');
+    : (rinfo.format?.toUpperCase() || 'JRS');
 
-  // Determine the TARGET format for the conversion
+  // Target format is always JRS
   const targetFormat = 'JRS';
 
   // Fire the beforeConvert event
@@ -141,16 +141,17 @@ const _convertOne = function(src, dst, idx) {
     srcFmt,
     dstFile: dst[idx],
     dstFmt: targetFormat
-  }
-  );
+  });
 
   // Save it to the destination format
   try {
-  rez.saveAs(dst[idx], targetFormat);
+    rez.saveAs(dst[idx], targetFormat);
   } catch (err) {
     if (err.badVer) {
-      return {fluenterror: HMSTATUS.invalidSchemaVersion, quit: true, data: err.badVer};
+      return { fluenterror: HMSTATUS.invalidSchemaVersion, quit: true, data: err.badVer };
     }
+    throw err;
   }
+
   return rez;
-};
+}

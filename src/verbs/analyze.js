@@ -1,99 +1,107 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+/**
+ * Implementation of the 'analyze' verb for HackMyResume.
+ * @module verbs/analyze
+ * @license MIT. See LICENSE.md for details.
  */
-/**
-Implementation of the 'analyze' verb for HackMyResume.
-@module verbs/analyze
-@license MIT. See LICENSE.md for details.
-*/
 
+'use strict';
 
-
-const HMEVENT       = require('../core/event-codes');
-const HMSTATUS      = require('../core/status-codes');
-// underscore not required anymore; use native array/object methods.
+const HMEVENT = require('../core/event-codes');
+const HMSTATUS = require('../core/status-codes');
 const ResumeFactory = require('../core/resume-factory');
-const Verb          = require('../verbs/verb');
+const Verb = require('../verbs/verb');
 
-
-
-/** An invokable resume analysis command. */
 /**
- * AnalyzeVerb — Analyze one or more resumes for coverage, gaps, totals, and
- * keywords. Uses inspector modules to compute results.
+ * Load available inspector modules.
+ * @returns {Object} Object containing inspector modules
+ */
+const loadInspectors = () => ({
+  totals: require('../inspectors/totals-inspector'),
+  coverage: require('../inspectors/gap-inspector'),
+  keywords: require('../inspectors/keyword-inspector')
+});
+
+/**
+ * An invokable resume analysis command.
+ * Analyzes one or more resumes for coverage, gaps, totals, and keywords.
+ * @class AnalyzeVerb
+ * @extends Verb
  */
 class AnalyzeVerb extends Verb {
-  constructor() { super('analyze', _analyze); }
+  /**
+   * Create a new analyze verb.
+   */
+  constructor() {
+    super('analyze', analyze);
+  }
 }
 
 module.exports = AnalyzeVerb;
 
-
-
 /**
- * Private workhorse for the 'analyze' command. Loads resumes and runs
- * configured inspectors.
+ * Analyze verb implementation.
+ * Loads resumes and runs configured inspectors.
+ * @param {Array<string>} sources - Source resume paths
+ * @param {Array<string>} dst - Destination paths (unused)
+ * @param {Object} opts - Analysis options
+ * @returns {Array|null} Array of analysis results or null on error
  */
-const _analyze = function(sources, dst, opts) {
-
-  if (!sources || !sources.length) {
+function analyze(sources, dst, opts) {
+  if (!sources?.length) {
     this.err(HMSTATUS.resumeNotFound, { quit: true });
     return null;
   }
 
-  const nlzrs = _loadInspectors();
+  const nlzrs = loadInspectors();
+
   const results = sources.map(src => {
-  const r = ResumeFactory.loadOne(src, { format: 'JRS', objectify: true, inner: {
-      private: opts.private === true
+    const r = ResumeFactory.loadOne(src, {
+      format: 'JRS',
+      objectify: true,
+      inner: { private: opts.private === true }
+    }, this);
+
+    if (opts.assert && this.hasError()) {
+      return {};
     }
-  }, this);
-    if (opts.assert && this.hasError()) { return { }; }
 
     if (r.fluenterror) {
       r.quit = opts.assert;
       this.err(r.fluenterror, r);
       return r;
-    } else {
-      return _analyzeOne.call(this, r, nlzrs, opts);
     }
-  }
-  );
 
+    return analyzeOne.call(this, r, nlzrs, opts);
+  });
 
   if (this.hasError() && !opts.assert) {
     this.reject(this.errorCode);
   } else if (!this.hasError()) {
     this.resolve(results);
   }
+
   return results;
-};
+}
 
-
-
-/** Analyze a single resume. */
 /**
  * Run analysis on a single resume object using the provided inspectors.
+ * @param {Object} resumeObject - The loaded resume object
+ * @param {Object} nlzrs - Object containing inspector modules
+ * @param {Object} opts - Analysis options
+ * @returns {Object} Analysis results from all inspectors
  */
-const _analyzeOne = function(resumeObject, nlzrs) {
+function analyzeOne(resumeObject, nlzrs, opts) {
   const { rez } = resumeObject;
-  const safeFormat =
-    rez.meta && rez.meta.format && rez.meta.format.startsWith('FRESH')
-    ? 'FRESH' : 'JRS';
 
-  this.stat( HMEVENT.beforeAnalyze, { fmt: safeFormat, file: resumeObject.file });
-  const info = Object.fromEntries(Object.entries(nlzrs).map(([k, v]) => [k, v.run(rez)]));
+  const safeFormat = rez.meta?.format?.startsWith('FRESH') ? 'FRESH' : 'JRS';
+
+  this.stat(HMEVENT.beforeAnalyze, { fmt: safeFormat, file: resumeObject.file });
+
+  const info = Object.fromEntries(
+    Object.entries(nlzrs).map(([k, v]) => [k, v.run(rez)])
+  );
+
   this.stat(HMEVENT.afterAnalyze, { info });
+
   return info;
-};
-
-
-
-const _loadInspectors = () =>
-  ({
-    totals: require('../inspectors/totals-inspector'),
-    coverage: require('../inspectors/gap-inspector'),
-    keywords: require('../inspectors/keyword-inspector')
-  })
-;
+}
