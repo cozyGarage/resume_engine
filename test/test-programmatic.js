@@ -53,9 +53,9 @@ describe('Programmatic API', function() {
     expect(detectFormat(jrsResume)).to.equal('jrs');
   });
 
-  it('should detect FRESH resume format', function() {
+  it('should return unknown for non-JRS resume format', function() {
     const detectFormat = HMR.utils.resumeDetector;
-    const freshResume = { info: { name: 'Test' }, employment: {} };
-    expect(detectFormat(freshResume)).to.equal('fresh');
+    const unknownResume = { foo: 'bar', baz: 123 };
+    expect(detectFormat(unknownResume)).to.equal('unk');
   });
 });

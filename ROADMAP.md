@@ -3,23 +3,15 @@ Development Roadmap
 
 ## Short-Term
 
-### FluentCV Desktop: Beta 1
-
-The **FluentCV Desktop 1.0 beta release** will present HackMyResume
-functionality in a cross-platform desktop application for OS X, Linux, and
-Windows.
-
 ### GitHub Integration
 
 HackMyResume will offer GitHub integration for versioned resume storage and
 retrieval via the `COMMIT` or `STORE` command(s) starting in 1.7.0 or 1.8.0.
 
-### fresh-themes 1.0.0
+### JSON Resume Themes 1.0.0
 
-The **fresh-themes 1.0** release will bring 100% coverage of the JSON Resume (JRS) and FRESH
-object models&mdash;all resume sections and fields&mdash;along with
-documentation, theme developer's guide, new themes, and a freeze to the FRESH
-theme structure.
+The **JSON Resume themes 1.0** ecosystem continues to grow with more themes and
+tools. HackMyResume supports all JSON Resume themes from NPM.
 
 ### Better LaTeX support
 

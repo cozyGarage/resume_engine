@@ -1,24 +1,24 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 /**
-Definition of the ResumeDetector class.
-@module utils/resume-detector
-@license MIT. See LICENSE.md for details.
-*/
+ * Definition of the ResumeDetector class.
+ * @module utils/resume-detector
+ * @license MIT. See LICENSE.md for details.
+ */
 
+'use strict';
+
+/**
+ * Detect if the given object is a valid JSON Resume (JRS) format.
+ * @param {Object} rez - The resume object to check
+ * @returns {string} 'jrs' if valid JSON Resume, 'unk' otherwise
+ */
 module.exports = function detectResumeFormat(rez) {
   if (!rez || typeof rez !== 'object') {
     return 'unk';
   }
 
-  if (rez.meta && rez.meta.format) {
+  // Check for explicit format in meta
+  if (rez.meta?.format) {
     const fmt = String(rez.meta.format).toLowerCase();
-    if (fmt.startsWith('fresh')) {
-      return 'fresh';
-    }
     if (
       fmt === 'jrs' ||
       fmt === 'jsonresume' ||
@@ -27,15 +27,11 @@ module.exports = function detectResumeFormat(rez) {
     ) {
       return 'jrs';
     }
-    return fmt;
   }
 
+  // Check for JRS structure (basics is the key indicator)
   if (rez.basics) {
     return 'jrs';
-  }
-
-  if (rez.info || rez.employment || rez.service || rez.projects) {
-    return 'fresh';
   }
 
   return 'unk';

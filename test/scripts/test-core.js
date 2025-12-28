@@ -322,14 +322,14 @@ describe('Core Module Tests', function() {
       expect(format.toLowerCase()).to.equal('jrs');
     });
 
-    it('should detect FRESH format', function() {
-      const freshResume = {
-        name: 'Test',
-        employment: { history: [] }
+    it('should detect JRS format via meta.format', function() {
+      const jrsResume = {
+        meta: { format: 'JRS@1.0' },
+        basics: { name: 'Test' }
       };
 
-      const format = ResumeDetector(freshResume);
-      expect(format.toLowerCase()).to.equal('fresh');
+      const format = ResumeDetector(jrsResume);
+      expect(format.toLowerCase()).to.equal('jrs');
     });
 
     it('should return unknown for unrecognized format', function() {

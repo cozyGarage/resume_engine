@@ -4,7 +4,7 @@ HackMyResume
 *Create polished résumés and CVs in multiple formats from your command line or
 shell. Author in clean Markdown and JSON, export to Word, HTML, PDF, LaTeX,
 plain text, and other arbitrary formats. Fight the power, save trees. Compatible
-with [JSON Resume (JRS)][6] and legacy [FRESCA][fresca] resumes.*
+with [JSON Resume (JRS)][6].*
 
 ![](assets/hmr_build.png)
 
@@ -16,8 +16,7 @@ YAML, print, smoke signal, carrier pigeon, and other arbitrary-format resumes
 and CVs, from a single source of truth&mdash;without violating DRY.
 2. **Analyze** your resume for keyword density, gaps/overlaps, and other
 metrics.
-3. **Convert** resumes between [JSON Resume][6] and legacy [FRESCA][fresca] formats.
-4. **Validate** resumes against either format.
+3. **Validate** resumes against the JSON Resume format.
 
 HackMyResume is built with Node.js and runs on recent versions of OS X, Linux,
 or Windows. View the [FAQ](FAQ.md).
@@ -35,7 +34,6 @@ or Windows. View the [FAQ](FAQ.md).
 - Output to HTML, Markdown, LaTeX, PDF, MS Word, JSON, YAML, plain text, or XML.
 - Validate resumes against the JSON Resume schema.
 - Support for multiple input and output resumes.
-- Convert between JSON Resume resumes.
 - Use from your command line or [desktop][7].
 - Free and open-source through the MIT license.
 - Updated daily / weekly. Contributions are [welcome](CONTRIBUTING.md).
@@ -123,7 +121,7 @@ if (best) {
 
 #### Resume Format Detection
 
-Detect whether a resume is in JSON Resume (JRS) or FRESH format:
+Detect whether a resume is in JSON Resume (JRS) format:
 
 ```js
 const HMR = require('hackmyresume');
@@ -132,10 +130,6 @@ const detectFormat = HMR.utils.resumeDetector;
 // Detect JRS format
 const jrsResume = { basics: { name: 'John Doe' } };
 console.log(detectFormat(jrsResume)); // 'jrs'
-
-// Detect FRESH format
-const freshResume = { info: { name: 'John Doe' }, employment: {} };
-console.log(detectFormat(freshResume)); // 'fresh'
 
 // Unknown format
 console.log(detectFormat({})); // 'unk'
@@ -229,10 +223,8 @@ formats, skip this step.
 
 ## Installing Themes
 
-HackMyResume supports both [][-themes] and [JSON Resume][jrst]-style
-résumé themes.
+HackMyResume supports [JSON Resume][jrst]-style résumé themes.
 
--  themes currently come preinstalled with HackMyResume.
 - JSON Resume themes can be installed from NPM, GitHub, or manually.
 
 To install a JSON Resume theme, just `cd` to the folder where you want to store
@@ -268,10 +260,10 @@ package.json or other NPM/Node infrastructure.
 
 ## Getting Started
 
-To use HackMyResume you'll need to create a valid resume in either
-[][fresca] or [JSON Resume][6] format. Then you can start using the command
-line tool or the programmatic API. See `docs/USAGE.md` for a full overview and
-examples for the CLI and programmatic API.
+To use HackMyResume you'll need to create a valid resume in [JSON Resume][6]
+format. Then you can start using the command line tool or the programmatic API.
+See `docs/USAGE.md` for a full overview and examples for the CLI and
+programmatic API.
 
 - **build** generates resumes in HTML, Word, Markdown, PDF, and other formats.
 Use it when you need to submit, upload, print, or email resumes in specific
@@ -286,10 +278,9 @@ formats.
 - **new** creates a new resume in JSON Resume format.
 
     ```bash
-    # hackmyresume new <OUTPUTS...> [-f <FORMAT>]
+    # hackmyresume new <OUTPUTS...>
     hackmyresume new resume.json
-    hackmyresume new resume.json -f 
-    hackmyresume new r1.json r2.json -f jrs
+    hackmyresume new r1.json r2.json
     ```
 
 - **analyze** inspects your resume for keywords, duration, and other metrics.
@@ -612,12 +603,11 @@ Sass / LESS / SCSS:     1 mentions
 
 ### Validating
 
-HackMyResume can also validate your resumes against either the [ /
-FRESCA][fresca] or [JSON Resume][6] formats. To validate one or more existing
-resumes, use the `validate` command:
+HackMyResume can also validate your resumes against the [JSON Resume][6]
+format. To validate one or more existing resumes, use the `validate` command:
 
 ```bash
-# Validate myresume.json against either the JSON Resume schema.
+# Validate resumes against the JSON Resume schema.
 hackmyresume validate resumeA.json resumeB.json
 ```
 
@@ -628,20 +618,6 @@ HackMyResume will validate each specified resume in turn:
 Validating JSON resume: resumeA.json (INVALID)
 Validating JSON resume: resumeB.json (VALID)
 ```
-
-### Converting
-
-HackMyResume can convert between the [][fresca] and [JSON Resume][6]
-formats. Just run:
-
-```bash
-hackmyresume convert <INPUTS> <OUTPUTS>
-```
-
-where <INPUTS> is one or more resumes in JSON Resume format, and
-<OUTPUTS> is a corresponding list of output file names. HackMyResume will
-autodetect the format ( or JRS) of each input resume and convert it to the
-other format (JRS or ).
 
 ### File-based Options
 
@@ -796,8 +772,6 @@ MIT. Go crazy. See [LICENSE.md][1] for details.
 [9]: https://api.jquery.com/jquery.extend/
 [10]: https://github.com/beautify-web/js-beautify
 [11]: http://weasyprint.org/
-[]: https://github.com/fluentdesk/
-[fresca]: https://github.com/-standard/-resume-schema
 [dry]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
 [img-release]: https://img.shields.io/github/release/hacksalot/HackMyResume.svg?label=version
 [img-master]: https://img.shields.io/travis/hacksalot/HackMyResume/master.svg
@@ -806,7 +780,6 @@ MIT. Go crazy. See [LICENSE.md][1] for details.
 [travis-url-dev]: https://travis-ci.org/hacksalot/HackMyResume?branch=dev
 [latest-release]: https://github.com/hacksalot/HackMyResume/releases/latest
 [contribute]: CONTRIBUTING.md
-[-themes]: https://github.com/fluentdesk/-themes
 [jrst]: https://www.npmjs.com/search?q=jsonresume-theme
 [gh]: https://gitter.im/hacksalot/HackMyResume?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [badge]: https://badges.gitter.im/hacksalot/HackMyResume.svg

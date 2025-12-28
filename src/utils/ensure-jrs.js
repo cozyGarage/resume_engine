@@ -1,11 +1,19 @@
-let ResumeConverter;
-try {
-  ResumeConverter = require('fresh-jrs-converter');
-} catch (e) {
-  ResumeConverter = null;
-}
+/**
+ * Ensure a resume is in JRS format.
+ * @module utils/ensure-jrs
+ * @license MIT. See LICENSE.md for details.
+ */
+
+'use strict';
+
 const detectFormat = require('./resume-detector');
 
+/**
+ * Ensure meta.format is set on the resume.
+ * @param {Object} resumeJson - The resume object
+ * @param {boolean} force - Force setting meta even if not present
+ * @returns {Object} The resume with meta.format set
+ */
 function ensureMeta(resumeJson, force) {
   if (!resumeJson.meta && !force) {
     return resumeJson;
@@ -17,6 +25,11 @@ function ensureMeta(resumeJson, force) {
   return resumeJson;
 }
 
+/**
+ * Ensure a resume is in JRS format.
+ * @param {Object} resumeJson - The resume to validate/convert
+ * @returns {Object} Object with json, detectedFormat, and wasConverted properties
+ */
 module.exports = function ensureJrs(resumeJson) {
   if (!resumeJson || typeof resumeJson !== 'object') {
     return {
@@ -29,25 +42,12 @@ module.exports = function ensureJrs(resumeJson) {
   const detectedFormat = detectFormat(resumeJson);
 
   // Treat an empty object as a JRS resume and provide default starter fields
-  // to ensure downstream consumers receive a valid JRS structure.
-  if ((detectedFormat === 'unk') && (Object.keys(resumeJson).length === 0)) {
+  if (detectedFormat === 'unk' && Object.keys(resumeJson).length === 0) {
     const starter = require('../core/jrs-starter').jrs;
     return {
       json: ensureMeta(starter, true),
       detectedFormat: 'jrs',
       wasConverted: false
-    };
-  }
-
-  if (detectedFormat === 'fresh') {
-    if (!ResumeConverter) {
-      throw new Error('FRESH support has been removed: automatic conversion to JRS is not available. Please convert the resume to JSON Resume (JRS) format externally or reinstall "fresh-jrs-converter".');
-    }
-    const converted = ResumeConverter.toJRS(resumeJson);
-    return {
-      json: ensureMeta(converted, true),
-      detectedFormat,
-      wasConverted: true
     };
   }
 
@@ -59,6 +59,7 @@ module.exports = function ensureJrs(resumeJson) {
     };
   }
 
+  // Unknown format - return as-is
   return {
     json: resumeJson,
     detectedFormat,
