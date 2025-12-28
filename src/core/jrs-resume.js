@@ -18,7 +18,6 @@ const extend = require('extend');
 let validator = require('is-my-json-valid');
 const _ = require('underscore');
 const PATH = require('path');
-const CONVERTER = require('fresh-jrs-converter');
 
 
 /**
@@ -120,16 +119,13 @@ class JRSResume {
 
 
 
-  /** Save the sheet to disk in a specific format, either FRESH or JRS. */
+  /** Save the sheet to disk in a specific format (JRS only). */
   saveAs( filename, format ) {
-    if (format === 'JRS') {
-      this.imp.file = filename || this.imp.file;
-      FS.writeFileSync( this.imp.file, this.stringify(), 'utf8' );
-    } else {
-      const newRep = CONVERTER.toFRESH(this);
-      const stringRep = CONVERTER.toSTRING(newRep);
-      FS.writeFileSync(filename, stringRep, 'utf8');
+    if (format !== 'JRS') {
+      throw new Error('Only JRS format is supported. FRESH format has been removed.');
     }
+    this.imp.file = filename || this.imp.file;
+    FS.writeFileSync( this.imp.file, this.stringify(), 'utf8' );
     return this;
   }
 
@@ -261,6 +257,38 @@ class JRSResume {
   }
 
 
+  /**
+  Transform all string values in the resume (used by keyword inspector).
+  @param excludeKeys {Array} Keys to exclude from transformation
+  @param callback {Function} Transform function (key, value) => void
+  */
+  transformStrings(excludeKeys, callback) {
+    const traverseObject = (obj, excludes) => {
+      if (!obj || typeof obj !== 'object') return;
+      
+      Object.keys(obj).forEach(key => {
+        if (excludes.includes(key)) return;
+        
+        const val = obj[key];
+        if (typeof val === 'string') {
+          callback(key, val);
+        } else if (Array.isArray(val)) {
+          val.forEach(item => {
+            if (typeof item === 'string') {
+              callback(key, item);
+            } else if (typeof item === 'object') {
+              traverseObject(item, excludes);
+            }
+          });
+        } else if (typeof val === 'object') {
+          traverseObject(val, excludes);
+        }
+      });
+    };
+    
+    traverseObject(this, excludeKeys || []);
+  }
+
 
   /**
   Create a copy of this resume in which all fields have been interpreted as
@@ -292,7 +320,7 @@ JRSResume.initClass();
 
 
 /** Get the default (empty) sheet. */
-JRSResume.default = () => new JRSResume().parseJSON(require('fresh-resume-starter').jrs);
+JRSResume.default = () => new JRSResume().parseJSON(require('./jrs-starter').jrs);
 
 
 

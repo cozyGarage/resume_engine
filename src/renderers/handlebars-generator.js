@@ -14,11 +14,7 @@ const _ = require('underscore');
 const HANDLEBARS = require('handlebars');
 const FS = require('fs');
 const registerHelpers = require('../helpers/handlebars-helpers');
-const PATH = require('path');
-const parsePath = require('parse-filepath');
-const READFILES = require('recursive-readdir-sync');
 const HMSTATUS = require('../core/status-codes');
-const SLASH = require('slash');
 
 
 
@@ -91,22 +87,10 @@ var registerPartials = function(format, theme) {
 
   if (_.contains( ['html','doc','md','txt','pdf'], format )) {
 
-    // Locate the global partials folder
-    const partialsFolder = PATH.join(
-      parsePath( require.resolve('fresh-themes') ).dirname,
-      '/partials/',
-      format === 'pdf' ? 'html' : format
-    );
-
-    // Register global partials in the /partials/[format] folder
-    // TODO: Only do this once per HMR invocation.
-    _.each(READFILES( partialsFolder ), function( el ) {
-      const name = SLASH(PATH.relative( partialsFolder, el ).replace(/\.(?:html|xml|hbs|md|txt)$/i, ''));
-      const tplData = FS.readFileSync(el, 'utf8');
-      const compiledTemplate = HANDLEBARS.compile(tplData);
-      HANDLEBARS.registerPartial(name, compiledTemplate);
-      return theme.partialsInitialized = true;
-    });
+    // Partials folder is now in the theme itself or optional
+    // Since fresh-themes is removed, partials registration is skipped
+    // unless the theme provides its own partials
+    theme.partialsInitialized = true;
   }
 
   // Register theme-specific partials

@@ -104,8 +104,8 @@ describe('Testing Ouput interface', function () {
 
   run('BUILD should display an error on a broken resume',
      ['build',
-      'node_modules/fresh-test-resumes/src/fresh/johnny-trouble.broken.json',
-      '-t', 'modern'
+      'test/fixtures/broken-resume.json',
+      '-t', 'node_modules/jsonresume-theme-classy'
     ], [ title, 'Error: Invalid or corrupt JSON on line'  ]);
 
   run('CONVERT should output a help message when no source is specified',
@@ -123,35 +123,35 @@ describe('Testing Ouput interface', function () {
   run('HMR should accept raw JSON via --options',
       [
         'build',
-        'node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json',
+        'test/fixtures/jrs/jane-fullstacker.json',
         'to',
         'test/sandbox/temp/janeq-1.all',
         '-o',
-        "{ theme: 'compact', debug: true, pdf: 'wkhtmltopdf' }"],
-      [ 'Applying COMPACT theme (', '(with wkhtmltopdf)'] );
+        "{ theme: 'node_modules/jsonresume-theme-classy', debug: true, pdf: 'none' }"],
+      [ 'Applying JSONRESUME-THEME-CLASSY theme'] );
 
   run('HMR should accept a JSON settings file via --options',
       [
         'build',
-        'node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json',
+        'test/fixtures/jrs/jane-fullstacker.json',
         'to',
         'test/sandbox/temp/janeq-2.all',
         '--options',
         "test/scripts/hmr-options.json"],
-      [ 'Applying POSITIVE theme'] );
+      [ 'Applying JSONRESUME-THEME-CLASSY theme'] );
 
   run('Explicit command line options should override --options',
       [
         'build',
-        'node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json',
+        'test/fixtures/jrs/jane-fullstacker.json',
         'to',
         'test/sandbox/temp/janeq-3.all',
         '--options',
         "test/scripts/hmr-options.json",
         "-t",
-        "modern"
+        "node_modules/jsonresume-theme-classy"
       ],
-      [ 'Applying MODERN theme'] );
+      [ 'Applying JSONRESUME-THEME-CLASSY theme'] );
 
   run('HMR should detect a missing or inaccessible options file',
       [

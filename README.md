@@ -9,7 +9,7 @@ HackMyResume
 *Create polished résumés and CVs in multiple formats from your command line or
 shell. Author in clean Markdown and JSON, export to Word, HTML, PDF, LaTeX,
 plain text, and other arbitrary formats. Fight the power, save trees. Compatible
-with [FRESH][fresca] and [JRS][6] resumes.*
+with [][fresca] and [JRS][6] resumes.*
 
 ![](assets/hmr_build.png)
 
@@ -21,7 +21,7 @@ YAML, print, smoke signal, carrier pigeon, and other arbitrary-format resumes
 and CVs, from a single source of truth&mdash;without violating DRY.
 2. **Analyze** your resume for keyword density, gaps/overlaps, and other
 metrics.
-3. **Convert** resumes between [FRESH][fresca] and [JSON Resume][6] formats.
+3. **Convert** resumes between [][fresca] and [JSON Resume][6] formats.
 4. **Validate** resumes against either format.
 
 HackMyResume is built with Node.js and runs on recent versions of OS X, Linux,
@@ -32,15 +32,15 @@ or Windows. View the [FAQ](FAQ.md).
 ## Features
 
 - OS X, Linux, and Windows.
-- Choose from dozens of FRESH or JSON Resume themes.
+- Choose from dozens of JSON Resume themes.
 - Private, local-only resume authoring and analysis.
 - Analyze your resume for keywords, gaps, and other metrics.
 - Store your resume data as a durable, versionable JSON or YAML document.
 - Generate polished resumes in multiple formats without violating [DRY][dry].
 - Output to HTML, Markdown, LaTeX, PDF, MS Word, JSON, YAML, plain text, or XML.
-- Validate resumes against the FRESH or JSON Resume schema.
+- Validate resumes against the JSON Resume schema.
 - Support for multiple input and output resumes.
-- Convert between FRESH and JSON Resume resumes.
+- Convert between JSON Resume resumes.
 - Use from your command line or [desktop][7].
 - Free and open-source through the MIT license.
 - Updated daily / weekly. Contributions are [welcome](CONTRIBUTING.md).
@@ -157,7 +157,7 @@ We added caching for the Bun runtime and Node artifacts in CI to speed
 up installs. GitHub Actions now caches the Bun store (~/.bun) and NPM
 cache/node_modules using the repository's `bun.lockb` and `package.json`
 as cache keys. If you want to reproduce a clean install locally, remove
-your `~/.bun` directory and `node_modules` to force a fresh install.
+your `~/.bun` directory and `node_modules` to force a  install.
 
 ## Installing PDF Support (optional)
 
@@ -172,10 +172,10 @@ formats, skip this step.
 
 ## Installing Themes
 
-HackMyResume supports both [FRESH][fresh-themes] and [JSON Resume][jrst]-style
+HackMyResume supports both [][-themes] and [JSON Resume][jrst]-style
 résumé themes.
 
-- FRESH themes currently come preinstalled with HackMyResume.
+-  themes currently come preinstalled with HackMyResume.
 - JSON Resume themes can be installed from NPM, GitHub, or manually.
 
 To install a JSON Resume theme, just `cd` to the folder where you want to store
@@ -202,7 +202,7 @@ package.json or other NPM/Node infrastructure.
 ## Getting Started
 
 To use HackMyResume you'll need to create a valid resume in either
-[FRESH][fresca] or [JSON Resume][6] format. Then you can start using the command
+[][fresca] or [JSON Resume][6] format. Then you can start using the command
 line tool or the programmatic API. See `docs/USAGE.md` for a full overview and
 examples for the CLI and programmatic API.
 
@@ -216,12 +216,12 @@ formats.
     hackmyresume build r1.json r2.json TO out/rez.html out/rez.md foo/rez.all
     ```
 
-- **new** creates a new resume in FRESH or JSON Resume format.
+- **new** creates a new resume in JSON Resume format.
 
     ```bash
     # hackmyresume new <OUTPUTS...> [-f <FORMAT>]
     hackmyresume new resume.json
-    hackmyresume new resume.json -f fresh
+    hackmyresume new resume.json -f 
     hackmyresume new r1.json r2.json -f jrs
     ```
 
@@ -233,7 +233,7 @@ formats.
     hackmyresume analyze r1.json r2.json
     ```
 
-- **convert** converts your source resume between FRESH and JSON Resume
+- **convert** converts your source resume between JSON Resume
 formats. Use it to convert between the two formats to take advantage of tools
 and services.
 
@@ -243,7 +243,7 @@ and services.
     hackmyresume convert 1.json 2.json 3.json TO out/1.json out/2.json out/3.json
     ```
 
-- **validate** validates the specified resume against either the FRESH or JSON
+- **validate** validates the specified resume against either the  or JSON
 Resume schema. Use it to make sure your resume data is sufficient and complete.
 
     ```bash
@@ -330,7 +330,7 @@ Generating YAML resume: out/resume.yml
 
 ### Applying a theme
 
-HackMyResume can work with any FRESH or JSON Resume theme (the latter must be
+HackMyResume can work with any JSON Resume theme (the latter must be
 installed first). To specify a theme when generating your resume, use the `-t`
 or `--theme` parameter:
 
@@ -339,7 +339,7 @@ hackmyresume build resume.json TO out/rez.all -t [theme]
 ```
 
 The `[theme]` parameter can be the name of a predefined theme OR the path to any
-FRESH or JSON Resume theme folder:
+JSON Resume theme folder:
 
 ```bash
 hackmyresume build resume.json TO out/rez.all -t modern
@@ -347,7 +347,7 @@ hackmyresume build resume.json TO OUT.rez.all -t ../some-folder/my-custom-theme/
 hackmyresume build resume.json TO OUT.rez.all -t node_modules/jsonresume-theme-classy
 ```
 
-FRESH themes are currently pre-installed with HackMyResume. JSON Resume themes
+ themes are currently pre-installed with HackMyResume. JSON Resume themes
 can be installed prior to use:
 
 ```bash
@@ -357,7 +357,7 @@ npm install jsonresume-theme-[name]
 hackmyresume build resume.json -t node_modules/jsonresume-theme-[name]
 ```
 
-As of v1.6.0, available predefined FRESH themes are `positive`, `modern`,
+As of v1.6.0, available predefined  themes are `positive`, `modern`,
 `compact`, `minimist`, and `hello-world`. For a list of JSON Resume themes,
 check the [NPM Registry](https://www.npmjs.com/search?q=jsonresume-theme).
 
@@ -463,7 +463,7 @@ Depending on the HackMyResume version, you should see output similar to:
 ```
 *** HackMyResume v1.6.0 ***
 Reading resume: resume.json
-Analyzing FRESH resume: resume.json
+Analyzing  resume: resume.json
 
 SECTIONS (10):
 
@@ -545,12 +545,12 @@ Sass / LESS / SCSS:     1 mentions
 
 ### Validating
 
-HackMyResume can also validate your resumes against either the [FRESH /
+HackMyResume can also validate your resumes against either the [ /
 FRESCA][fresca] or [JSON Resume][6] formats. To validate one or more existing
 resumes, use the `validate` command:
 
 ```bash
-# Validate myresume.json against either the FRESH or JSON Resume schema.
+# Validate myresume.json against either the JSON Resume schema.
 hackmyresume validate resumeA.json resumeB.json
 ```
 
@@ -564,17 +564,17 @@ Validating JSON resume: resumeB.json (VALID)
 
 ### Converting
 
-HackMyResume can convert between the [FRESH][fresca] and [JSON Resume][6]
+HackMyResume can convert between the [][fresca] and [JSON Resume][6]
 formats. Just run:
 
 ```bash
 hackmyresume convert <INPUTS> <OUTPUTS>
 ```
 
-where <INPUTS> is one or more resumes in FRESH or JSON Resume format, and
+where <INPUTS> is one or more resumes in JSON Resume format, and
 <OUTPUTS> is a corresponding list of output file names. HackMyResume will
-autodetect the format (FRESH or JRS) of each input resume and convert it to the
-other format (JRS or FRESH).
+autodetect the format ( or JRS) of each input resume and convert it to the
+other format (JRS or ).
 
 ### File-based Options
 
@@ -687,7 +687,7 @@ hackmyresume build resume.json private-resume.all --private
 
 ### Custom theme helpers
 
-You can attach your own custom Handlebars helpers to a FRESH theme with the
+You can attach your own custom Handlebars helpers to a  theme with the
 `helpers` key of your theme's `theme.json` file.
 
 ```js
@@ -729,8 +729,8 @@ MIT. Go crazy. See [LICENSE.md][1] for details.
 [9]: https://api.jquery.com/jquery.extend/
 [10]: https://github.com/beautify-web/js-beautify
 [11]: http://weasyprint.org/
-[fresh]: https://github.com/fluentdesk/FRESH
-[fresca]: https://github.com/fresh-standard/fresh-resume-schema
+[]: https://github.com/fluentdesk/
+[fresca]: https://github.com/-standard/-resume-schema
 [dry]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
 [img-release]: https://img.shields.io/github/release/hacksalot/HackMyResume.svg?label=version
 [img-master]: https://img.shields.io/travis/hacksalot/HackMyResume/master.svg
@@ -739,7 +739,7 @@ MIT. Go crazy. See [LICENSE.md][1] for details.
 [travis-url-dev]: https://travis-ci.org/hacksalot/HackMyResume?branch=dev
 [latest-release]: https://github.com/hacksalot/HackMyResume/releases/latest
 [contribute]: CONTRIBUTING.md
-[fresh-themes]: https://github.com/fluentdesk/fresh-themes
+[-themes]: https://github.com/fluentdesk/-themes
 [jrst]: https://www.npmjs.com/search?q=jsonresume-theme
 [gh]: https://gitter.im/hacksalot/HackMyResume?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [badge]: https://badges.gitter.im/hacksalot/HackMyResume.svg

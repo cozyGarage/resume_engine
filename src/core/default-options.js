@@ -5,7 +5,7 @@ Event code definitions.
 */
 
 module.exports = {
-  theme: 'modern',
+  theme: 'node_modules/jsonresume-theme-classy',
   prettify: { // ← See https://github.com/beautify-web/js-beautify#options
     indent_size: 2,
     unformatted: ['em','strong'],

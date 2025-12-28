@@ -1,4 +1,4 @@
 {
-  "theme": "positive",
+  "theme": "node_modules/jsonresume-theme-classy",
   "debug": true
 }

@@ -11,7 +11,7 @@ var chai = require('chai')
   , should = chai.should()
   , path = require('path')
   , _ = require('underscore')
-	, FRESHResume = require('../../src/core/fresh-resume')
+  , JRSResume = require('../../src/core/jrs-resume')
   , FCMD = require( '../../src/index')
   , validator = require('is-my-json-valid')
   , EXTEND = require('extend');
@@ -23,56 +23,56 @@ chai.config.includeStack = true;
 
 
 var gig = {
-  employer: 'E1'
+  company: 'E1'
 };
 
 var r = {
-  name: 'John Doe',
-  meta: {
-    format: 'FRESH@0.6.0'
+  basics: {
+    name: 'John Doe'
   },
-  employment: {
-    history: [ null ]
-  }
+  meta: {
+    format: 'JRS@1.0'
+  },
+  work: [ null ]
 };
 
 
 
 var tests = [
   // single job, concrete start, no end
-  [ { start: '2010-01-01' } , { val: 8, unit: 'year' } ],
-  [ { start: '2010-01' } , { val: 8, unit: 'year' } ],
-  [ { start: '2010' } , { val: 8, unit: 'year' } ],
+  [ { startDate: '2010-01-01' } , { val: 8, unit: 'year' } ],
+  [ { startDate: '2010-01' } , { val: 8, unit: 'year' } ],
+  [ { startDate: '2010' } , { val: 8, unit: 'year' } ],
 
   // single job, concrete start, concrete end
-  [ { start: '2010-01-01', end: '2015-01-01' } , { val: 5, unit: 'year' } ],
-  [ { start: '2010-01', end: '2015-01' } , { val: 5, unit: 'year' } ],
-  [ { start: '2010', end: '2015' } , { val: 5, unit: 'year' } ],
+  [ { startDate: '2010-01-01', endDate: '2015-01-01' } , { val: 5, unit: 'year' } ],
+  [ { startDate: '2010-01', endDate: '2015-01' } , { val: 5, unit: 'year' } ],
+  [ { startDate: '2010', endDate: '2015' } , { val: 5, unit: 'year' } ],
 
   // single job, falsy start, falsy end
   [ { } , { val: 0, unit: 'year' } ],
-  [ { start: null } , { val: 0, unit: 'year' } ],
-  [ { end: null } , { val: 0, unit: 'year' } ],
-  [ { start: undefined } , { val: 0, unit: 'year' } ],
-  [ { end: undefined } , { val: 0, unit: 'year' } ],
-  [ { start: null, end: null } , { val: 0, unit: 'year' } ],
-  [ { start: '', end: '' } , { val: 0, unit: 'year' } ],
-  [ { start: ' ', end: ' ' } , { val: 0, unit: 'year' } ],
-  [ { start: undefined, end: undefined } , { val: 0, unit: 'year' } ],
+  [ { startDate: null } , { val: 0, unit: 'year' } ],
+  [ { endDate: null } , { val: 0, unit: 'year' } ],
+  [ { startDate: undefined } , { val: 0, unit: 'year' } ],
+  [ { endDate: undefined } , { val: 0, unit: 'year' } ],
+  [ { startDate: null, endDate: null } , { val: 0, unit: 'year' } ],
+  [ { startDate: '', endDate: '' } , { val: 0, unit: 'year' } ],
+  [ { startDate: ' ', endDate: ' ' } , { val: 0, unit: 'year' } ],
+  [ { startDate: undefined, endDate: undefined } , { val: 0, unit: 'year' } ],
 
   // two jobs (concrete start + end) -> ( concrete start )
-  [ { start: '2000-01', end: '2013-01' }, { start: '2013-01' }, { val: 18, unit: 'year' } ],
-  [ { start: '2000-01', end: '2013-01' }, { start: '2013-01', end: '' }, { val: 18, unit: 'year' } ],
-  [ { start: '2000-01', end: '2013-01' }, { start: '2013-01', end: null }, { val: 18, unit: 'year' } ],
-  [ { start: '2000-01', end: '2013-01' }, { start: '2013-01', end: 'current' }, { val: 18, unit: 'year' } ]
+  [ { startDate: '2000-01', endDate: '2013-01' }, { startDate: '2013-01' }, { val: 18, unit: 'year' } ],
+  [ { startDate: '2000-01', endDate: '2013-01' }, { startDate: '2013-01', endDate: '' }, { val: 18, unit: 'year' } ],
+  [ { startDate: '2000-01', endDate: '2013-01' }, { startDate: '2013-01', endDate: null }, { val: 18, unit: 'year' } ],
+  [ { startDate: '2000-01', endDate: '2013-01' }, { startDate: '2013-01', endDate: 'current' }, { val: 18, unit: 'year' } ]
 
 ];
 
 
 
 tests.forEach(function(t){
-   _.initial( t ).forEach(function(t){ t.employer = 'E1' });
-})
+   _.initial( t ).forEach(function(t){ t.company = 'E1'; });
+});
 
 
 
@@ -81,8 +81,8 @@ describe('Testing DATES', function () {
   tests.forEach( function(t) {
 
     it( JSON.stringify( _.initial(t) ), function () {
-      r.employment.history = _.initial( t );
-      var rObj = new FRESHResume();
+      r.work = _.initial( t );
+      var rObj = new JRSResume();
       rObj.parseJSON( r );
       var dur = rObj.duration();
       expect( dur ).to.equal( _.last(t).val );

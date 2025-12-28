@@ -71,20 +71,7 @@ function genThemes( title, src, fmt ) {
       });
     }
 
-    // Build the resume for each theme
-    //genTheme(fmt, src, 'hello-world');
-    genTheme(fmt, src, 'compact');
-    genTheme(fmt, src, 'modern');
-    genTheme(fmt, src, 'underscore', 'node_modules/fresh-theme-underscore' );
-    genTheme(fmt, src, 'awesome');
-    genTheme(fmt, src, 'positive');
-
-    genTheme(fmt, src, 'jsonresume-theme-boilerplate',
-       'node_modules/jsonresume-theme-boilerplate' );
-    genTheme(fmt, src, 'jsonresume-theme-sceptile',
-      'node_modules/jsonresume-theme-sceptile' );
-    genTheme(fmt, src, 'jsonresume-theme-modern',
-      'node_modules/jsonresume-theme-modern' );
+    // Build the resume for each theme - JRS themes only
     genTheme(fmt, src, 'jsonresume-theme-classy',
       'node_modules/jsonresume-theme-classy' );
 
@@ -117,20 +104,14 @@ function foldersMatch( a, b ) {
 }
 
 genThemes(
-  'jane-q-fullstacker',
-  ['node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json'],
-  'FRESH'
-);
-
-genThemes(
-  'johnny-trouble',
-  ['node_modules/fresh-test-resumes/src/fresh/johnny-trouble.json'],
-  'FRESH'
+  'jane-fullstacker',
+  ['test/fixtures/jrs/jane-fullstacker.json'],
+  'JRS'
 );
 
 genThemes(
   'richard-hendriks',
-  ['node_modules/fresh-test-resumes/src/jrs/richard-hendriks.json'],
+  ['test/fixtures/jrs/richard-hendriks.json'],
   'JRS'
 );
 

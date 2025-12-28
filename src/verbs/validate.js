@@ -26,7 +26,7 @@ class ValidateVerb extends Verb {
 
 
 
-// Validate 1 to N resumes in FRESH or JSON Resume format.
+// Validate 1 to N resumes in JSON Resume format.
 var _validate = function(sources, unused, opts)  {
 
   if (!sources || !sources.length) {
@@ -36,8 +36,7 @@ var _validate = function(sources, unused, opts)  {
 
   const validator = require('is-my-json-valid');
   const schemas = {
-    fresh: require('fresh-resume-schema'),
-    jars: require('../core/resume.json')
+    jrs: require('../core/resume.json')
   };
 
   const results = _.map(sources, function(t)  {
@@ -79,7 +78,7 @@ var _validateOne = function(t, validator, schemas) {
 
     // If success, validate the resume against the schema
     if (!obj.ex) {
-      if (obj.json.basics) { ret.schema = 'jars'; } else { ret.schema = 'fresh'; }
+      ret.schema = 'jrs';  // We only support JRS now
       const validate = validator(schemas[ ret.schema ], // Note [1]
         {formats: { date: /^\d{4}(?:-(?:0[0-9]{1}|1[0-2]{1})(?:-[0-9]{2})?)?$/ }});
       ret.isValid = validate(obj.json);

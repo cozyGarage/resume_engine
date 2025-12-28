@@ -9,7 +9,7 @@ var chai = require('chai')
   , chaiAsPromised = require("chai-as-promised")
   , path = require('path')
   , _ = require('underscore')
-	, FRESHResume = require('../../src/core/fresh-resume')
+  , JRSResume = require('../../src/core/jrs-resume')
   , FCMD = require( '../../src/index')
   , validator = require('is-my-json-valid')
   , EXTEND = require('extend');
@@ -24,7 +24,7 @@ chai.config.includeStack = false;
 var _sheet;
 
 var opts = {
-  format: 'FRESH',
+  format: 'JRS',
   prettify: true,
   silent: false,
   assert: true  // Causes validation errors to throw exceptions
@@ -37,32 +37,17 @@ var opts2 = {
 };
 
 var sb = 'test/sandbox/';
-var ft = 'node_modules/fresh-test-resumes/src/fresh/';
+var ft = 'test/fixtures/jrs/';  // Use local test fixtures
 
 // Assemble an array of tests, taking the form of parameters we'll pass to
 // each of the defined HackMyResume verbs.
 var tests = [
 
   [ 'new',
-    [sb + 'new-fresh-resume.json'],
-    [],
-    opts,
-    ' (FRESH format)'
-  ],
-
-  [ 'new',
     [sb + 'new-jrs-resume.json'],
     [],
-    opts2,
-    ' (JRS format)'
-  ],
-
-  [
-    'new',
-    [sb + 'new-1.json', sb + 'new-2.json', sb + 'new-3.json'],
-    [],
     opts,
-    ' (multiple FRESH resumes)'
+    ' (JRS format)'
   ],
 
   [ 'new',
@@ -83,91 +68,28 @@ var tests = [
     [ft + 'jane-fullstacker.json'],
     [],
     opts,
-    ' (jane-q-fullstacker|FRESH)'
+    ' (jane-fullstacker|JRS)'
   ],
 
   [ 'validate',
-    [ft + 'johnny-trouble.json'],
+    [ft + 'richard-hendriks.json'],
     [],
     opts,
-    ' (johnny-trouble|FRESH)'
-  ],
-
-  [ 'validate',
-    [sb + 'new-fresh-resume.json'],
-    [],
-    opts,
-    ' (new-fresh-resume|FRESH)'
-  ],
-
-  [ 'validate',
-    ['node_modules/fresh-test-resumes/src/jrs/richard-hendriks.json'],
-    [],
-    opts2,
     ' (richard-hendriks.json|JRS)'
-  ],
-
-  [ 'validate',
-    ['node_modules/fresh-test-resumes/src/jrs/jane-incomplete.json'],
-    [],
-    opts2,
-    ' (jane-incomplete.json|JRS)'
-  ],
-
-  [ 'validate',
-    [sb + 'new-1.json', sb + 'new-jrs-resume.json', sb + 'new-1.json',
-      sb + 'new-2.json', sb + 'new-3.json'],
-    [],
-    opts,
-    ' (5|BOTH)'
   ],
 
   [ 'analyze',
     [ft + 'jane-fullstacker.json'],
     [],
     opts,
-    ' (jane-q-fullstacker|FRESH)'
+    ' (jane-fullstacker|JRS)'
   ],
 
   [ 'analyze',
-    ['node_modules/fresh-test-resumes/src/jrs/richard-hendriks.json'],
+    [ft + 'richard-hendriks.json'],
     [],
-    opts2,
+    opts,
     ' (richard-hendriks|JRS)'
-  ],
-
-  [ 'build',
-    [ ft + 'jane-fullstacker.json', ft + 'override/jane-fullstacker-override.fresh.json' ],
-    [ sb + 'merged/jane-fullstacker-gamedev.fresh.all'],
-    opts,
-    ' (jane-q-fullstacker w/ override|FRESH)'
-  ],
-
-  [ 'build',
-    [ ft + 'override/jane-partial-a.json', ft + 'override/jane-partial-b.json',
-      ft + 'override/jane-partial-c.json' ],
-    [ sb + 'merged/jane-abc.fresh.all'],
-    opts,
-    ' (jane merge A + B + C|FRESH)',
-    function( r ) {
-      var expected = [
-        'name','meta','info', 'contact', 'location', 'projects', 'social',
-        'employment', 'education', 'affiliation', 'service', 'skills',
-        'samples', 'writing', 'reading', 'speaking', 'recognition',
-        'references', 'testimonials', 'languages', 'interests',
-        'extracurricular', 'governance'
-      ];
-
-      Object.keys( _.pick( r, expected ) ).length
-        .should.equal( expected.length );
-    }
-  ],
-
-  [ '!build',
-    [ ft + 'jane-fullstacker.json'],
-    [ sb + 'shouldnt-exist.pdf' ],
-    EXTEND(true, {}, opts, { theme: 'awesome' }),
-    ' (jane-q-fullstacker + Awesome + PDF|FRESH)'
   ]
 
 ];

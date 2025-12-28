@@ -17,15 +17,12 @@ const PATH           = require('path');
 const MKDIRP         = require('mkdirp');
 const extend         = require('extend');
 const parsePath      = require('parse-filepath');
-const RConverter     = require('fresh-jrs-converter');
 const HMSTATUS       = require('../core/status-codes');
 const HMEVENT        = require('../core/event-codes');
 const RTYPES         = {
-  FRESH: require('../core/fresh-resume'),
   JRS: require('../core/jrs-resume')
 };
 const _opts          = require('../core/default-options');
-const FRESHTheme     = require('../core/fresh-theme');
 const JRSTheme       = require('../core/jrs-theme');
 const ResumeFactory  = require('../core/resume-factory');
 const _fmts          = require('../core/default-formats');
@@ -140,19 +137,13 @@ var _build = function( src, dst, opts ) {
     rez = sheets[0];
   }
 
-  // Convert the merged source resume to the theme's format, if necessary..
-  const orgFormat = rez.basics ? 'JRS' : 'FRESH';
-  const toFormat = theme.render ? 'JRS' : 'FRESH';
-  if (toFormat !== orgFormat) {
-    this.stat(HMEVENT.beforeInlineConvert);
-    rez = RConverter[ `to${toFormat}` ]( rez );
-    this.stat(HMEVENT.afterInlineConvert, { file: sheetObjects[0].file, fmt: toFormat });
-  }
+  // JSON Resume format is the only supported format now
+  const toFormat = 'JRS';
 
   // Announce the theme
   this.stat(HMEVENT.applyTheme, {r: rez, theme});
 
-  // Load the resume into a FRESHResume or JRSResume object
+  // Load the resume into a JRSResume object
   _rezObj = new (RTYPES[ toFormat ])().parseJSON( rez, {private: _opts.private} );
 
   // Expand output resumes...
@@ -370,27 +361,23 @@ Verify the specified theme name/path.
 */
 var _verifyTheme = function( themeNameOrPath ) {
 
-  // First, see if this is one of the predefined FRESH themes. There are only a
-  // handful of these, but they may change over time, so we need to query
-  // the official source of truth: the fresh-themes repository, which mounts the
-  // themes conveniently by name to the module object, and which is embedded
-  // locally inside the HackMyResume installation.
-  let tFolder;
-  const themesObj = require('fresh-themes');
-  if (_.has(themesObj.themes, themeNameOrPath)) {
-    tFolder = PATH.join(
-      parsePath( require.resolve('fresh-themes') ).dirname,
-      '/themes/',
-      themeNameOrPath
-    );
-  } else {
-  // Otherwsie it's a path to an arbitrary FRESH or JRS theme sitting somewhere
-  // on the user's system (or, in the future, at a URI).
-    tFolder = PATH.resolve(themeNameOrPath);
+  // Check if this is a path to a JRS theme on the user's system
+  let tFolder = PATH.resolve(themeNameOrPath);
+  
+  // If not found directly, try in node_modules
+  const exists = require('path-exists').sync;
+  if (!exists(tFolder)) {
+    // Try looking for jsonresume-theme-* in node_modules
+    try {
+      const themePkg = `jsonresume-theme-${themeNameOrPath}`;
+      tFolder = PATH.dirname(require.resolve(themePkg));
+    } catch (_err) {
+      // Theme not found
+      return {fluenterror: HMSTATUS.themeNotFound, data: _opts.theme};
+    }
   }
 
-  // In either case, make sure the theme folder exists
-  const exists = require('path-exists').sync;
+  // Make sure the theme folder exists
   if (exists(tFolder)) {
     return tFolder;
   } else {
@@ -401,19 +388,12 @@ var _verifyTheme = function( themeNameOrPath ) {
 
 
 /**
-Load the specified theme, which could be either a FRESH theme or a JSON Resume
-theme (or both).
+Load the specified theme (JRS theme only).
 */
 var _loadTheme = function( tFolder ) {
 
-  const themeJsonPath = PATH.join(tFolder, 'theme.json'); // [^1]
-  const exists = require('path-exists').sync;
-
-  // Create a FRESH or JRS theme object
-  const theTheme =
-    exists(themeJsonPath)
-    ? new FRESHTheme().open(tFolder)
-    : new JRSTheme().open(tFolder);
+  // Create a JRS theme object
+  const theTheme = new JRSTheme().open(tFolder);
 
   // Cache the theme object
   _opts.themeObj = theTheme;

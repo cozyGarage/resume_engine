@@ -14,14 +14,13 @@ Definition of the ResumeFactory class.
 const FS              = require('fs');
 const HMS    = require('./status-codes');
 const HME             = require('./event-codes');
-const ResumeConverter = require('fresh-jrs-converter');
 const resumeDetect    = require('../utils/resume-detector');
 require('string.prototype.startswith');
 
 
 
 /**
-A simple factory class for FRESH and JSON Resumes.
+A simple factory class for JSON Resumes (JRS).
 @class ResumeFactory
 */
 
@@ -33,12 +32,12 @@ module.exports = {
   Load one or more resumes from disk.
 
   @param {Object} opts An options object with settings for the factory as well
-  as passthrough settings for FRESHResume or JRSResume. Structure:
+  as passthrough settings for JRSResume. Structure:
 
       {
-        format: 'FRESH',    // Format to open as. ('FRESH', 'JRS', null)
-        objectify: true,    // FRESH/JRSResume or raw JSON?
-        inner: {            // Passthru options for FRESH/JRSResume
+        format: 'JRS',      // Format to open as (only JRS supported)
+        objectify: true,    // JRSResume or raw JSON?
+        inner: {            // Passthru options for JRSResume
           sort: false
         }
       }
@@ -55,16 +54,11 @@ module.exports = {
   /** Load a single resume from disk.  */
   loadOne( src, opts, emitter ) {
 
-    let toFormat = opts.format;     // Can be null
-
-    // Get the destination format. Can be 'fresh', 'jrs', or null/undefined.
-    toFormat && (toFormat = toFormat.toLowerCase().trim());
-
     // Load and parse the resume JSON
     const info = _parse(src, opts, emitter);
     if (info.fluenterror) { return info; }
 
-    // Determine the resume format: FRESH or JRS
+    // Determine the resume format: must be JRS
     let { json } = info;
     const orgFormat = resumeDetect(json);
     if (orgFormat === 'unk') {
@@ -72,17 +66,10 @@ module.exports = {
       return info;
     }
 
-    // Convert between formats if necessary
-    if (toFormat && ( orgFormat !== toFormat )) {
-      json = ResumeConverter[ `to${toFormat.toUpperCase()}` ](json);
-    }
-
-    // Objectify the resume, that is, convert it from JSON to a FRESHResume
-    // or JRSResume object.
+    // Objectify the resume, that is, convert it from JSON to a JRSResume object.
     let rez = null;
     if (opts.objectify) {
-      const reqLib = `../core/${toFormat || orgFormat}-resume`;
-      const ResumeClass = require(reqLib);
+      const ResumeClass = require('../core/jrs-resume');
       rez = new ResumeClass().parseJSON( json, opts.inner );
       rez.i().file = src;
     }
@@ -109,9 +96,7 @@ var _parse = function( fileName, opts, eve ) {
     // Parse the file
     eve && eve.stat(HME.beforeParse, { data: rawData });
     const ret = { json: JSON.parse( rawData ) };
-    const orgFormat =
-      ret.json.meta && ret.json.meta.format && ret.json.meta.format.startsWith('FRESH@')
-      ? 'fresh' : 'jrs';
+    const orgFormat = 'jrs';  // We only support JRS now
 
     eve && eve.stat(HME.afterParse, { file: fileName, data: ret.json, fmt: orgFormat });
     return ret;

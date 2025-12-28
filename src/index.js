@@ -4,8 +4,6 @@ External API surface for HackMyResume.
 @module hackmycore/index
 */
 
-
-
 /** API facade for HackMyResume. */
 
 module.exports = {
@@ -26,10 +24,8 @@ module.exports = {
 
   options:              require('./core/default-options'),
   formats:              require('./core/default-formats'),
-  Sheet:                require('./core/fresh-resume'),
-  FRESHResume:          require('./core/fresh-resume'),
+  Sheet:                require('./core/jrs-resume'),
   JRSResume:            require('./core/jrs-resume'),
-  FRESHTheme:           require('./core/fresh-theme'),
   JRSTheme:             require('./core/jrs-theme'),
   ResumeFactory:        require('./core/resume-factory'),
   FluentDate:           require('./core/fluent-date'),
@@ -42,5 +38,9 @@ module.exports = {
   YamlGenerator:        require('./generators/yaml-generator'),
   JsonYamlGenerator:    require('./generators/json-yaml-generator'),
   LaTeXGenerator:       require('./generators/latex-generator'),
-  HtmlPngGenerator:     require('./generators/html-png-generator')
+  HtmlPngGenerator:     require('./generators/html-png-generator'),
+
+  utils: {
+    resumeDetector:     require('./utils/resume-detector')
+  }
 };

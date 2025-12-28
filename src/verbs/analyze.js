@@ -38,7 +38,7 @@ var _analyze = function( sources, dst, opts ) {
 
   const nlzrs = _loadInspectors();
   const results = _.map(sources, function(src) {
-    const r = ResumeFactory.loadOne(src, { format: 'FRESH', objectify: true, inner: {
+    const r = ResumeFactory.loadOne(src, { format: 'JRS', objectify: true, inner: {
       private: opts.private === true
     }
   }, this);
@@ -68,9 +68,7 @@ var _analyze = function( sources, dst, opts ) {
 /** Analyze a single resume. */
 var _analyzeOne = function( resumeObject, nlzrs ) {
   const { rez } = resumeObject;
-  const safeFormat =
-    rez.meta && rez.meta.format && rez.meta.format.startsWith('FRESH')
-    ? 'FRESH' : 'JRS';
+  const safeFormat = 'JRS';
 
   this.stat( HMEVENT.beforeAnalyze, { fmt: safeFormat, file: resumeObject.file });
   const info = _.mapObject(nlzrs, (val) => val.run(rez));

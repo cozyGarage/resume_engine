@@ -3,11 +3,6 @@ Development Roadmap
 
 ## Short-Term
 
-### FluentCV Desktop: Beta 1
-
-The **FluentCV Desktop 1.0 beta release** will present HackMyResume
-functionality in a cross-platform desktop application for OS X, Linux, and
-Windows.
 
 ### GitHub Integration
 

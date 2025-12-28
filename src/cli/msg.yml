@@ -57,17 +57,17 @@ errors:
   themeNotFound:
     msg: >
       **Couldn't find the '%s' theme.** Please specify the name of a preinstalled
-      FRESH theme or the path to a locally installed FRESH or JSON Resume theme.
+      theme or the path to a locally installed JSON Resume theme.
   copyCSS:
     msg: Couldn't copy CSS file to destination folder.
   resumeNotFound:
-    msg: Please **feed me a resume** in FRESH or JSON Resume format.
+    msg: Please **feed me a resume** in JSON Resume format.
   missingCommand:
     msg: Please **give me a command**
   invalidCommand:
     msg: Invalid command: '%s'
   resumeNotFoundAlt:
-    msg: Please **feed me a resume** in either FRESH or JSON Resume format.
+    msg: Please **feed me a resume** in JSON Resume format.
   inputOutputParity:
     msg: Please **specify an output file name** for every input file you wish to convert.
   createNameMissing:
@@ -117,17 +117,9 @@ errors:
     msg: "The specified options file is missing or inaccessible."
   unknownSchema:
     msg:
-      - "Unknown resume schema. Did you specify a valid FRESH or JRS resume?"
+      - "Unknown resume schema. Did you specify a valid JSON Resume?"
       - |
-          At a minimum, a FRESH resume must include a "name" field and a "meta"
-          property.
-
-          "name": "John Doe",
-          "meta": {
-            "format": "FRESH@0.1.0"
-          }
-
-          JRS-format resumes must include a "basics" section with a "name":
+          A JSON Resume must include a "basics" section with a "name":
 
           "basics": {
             "name": "John Doe"

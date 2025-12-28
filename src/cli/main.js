@@ -67,9 +67,9 @@ module.exports = function( rawArgs, exitCallback ) {
   program
     .command('new')
     .arguments('<sources...>')
-    .option('-f --format <fmt>', 'FRESH or JRS format', 'FRESH')
+    .option('-f --format <fmt>', 'JRS format', 'JRS')
     .alias('create')
-    .description('Create resume(s) in FRESH or JSON RESUME format.')
+    .description('Create resume(s) in JSON RESUME format.')
     .action((function( sources ) {
       execute.call( this, sources, [], this.opts(), logMsg);
     })
@@ -79,7 +79,7 @@ module.exports = function( rawArgs, exitCallback ) {
   program
     .command('validate')
     .arguments('<sources...>')
-    .description('Validate a resume in FRESH or JSON RESUME format.')
+    .description('Validate a resume in JSON RESUME format.')
     .action(function(sources) {
       execute.call( this, sources, [], this.opts(), logMsg);
     });
@@ -87,8 +87,8 @@ module.exports = function( rawArgs, exitCallback ) {
   // Create the CONVERT command
   program
     .command('convert')
-    .description('Convert a resume to/from FRESH or JSON RESUME format.')
-    .option('-f --format <fmt>', 'FRESH or JRS format and optional version', undefined)
+    .description('Convert a resume between JSON RESUME versions.')
+    .option('-f --format <fmt>', 'JRS format and optional version', undefined)
     .action(function() {
       const x = splitSrcDest.call( this );
       execute.call( this, x.src, x.dst, this.opts(), logMsg);
