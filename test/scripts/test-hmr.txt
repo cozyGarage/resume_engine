@@ -9,7 +9,7 @@
 0|new test/sandbox/cli-test/new-empty-resume.jrs.json -f jrs
 3|analyze
 14|analyze doesnt-exist.json
-0|analyze node_modules/fresh-test-resumes/src/jrs/john-doe.json
+0|analyze test/fixtures/jrs/john-doe.json
 3|convert
 7|convert doesnt-exist.json
 14|convert from.json to.json
@@ -18,25 +18,25 @@
 14|convert z1.json z2.json to z3.json z4.json
 3|validate
 14|validate doesnt-exist.json
-0|validate node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json
+0|validate test/fixtures/jrs/jane-fullstacker.json
 3|peek
 14|peek doesnt-exist.json
 14|peek doesnt-exist.json not.a.path
 15|peek test/fixtures/broken-resume.json
-0|peek node_modules/fresh-test-resumes/src/jrs/richard-hendriks.json work[0]
-0|peek node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json work[1].company
-0|peek node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json skills[0].keywords
+0|peek test/fixtures/jrs/richard-hendriks.json work[0]
+0|peek test/fixtures/jrs/jane-fullstacker.json work[1].company
+0|peek test/fixtures/jrs/jane-fullstacker.json skills[0].keywords
 3|build
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.html
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.pdf
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.yml
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.json
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme modern
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme classy
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme sceptile
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme boilerplate
-0|build node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme jsonresume-theme-modern
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.html
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.pdf
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.yml
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.json
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme modern
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme classy
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme sceptile
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme boilerplate
+0|build test/fixtures/jrs/jane-fullstacker.json TO test/sandbox/cli-test/jane/resume.all --theme jsonresume-theme-modern
 14|build doesnt-exist.json
 14|build doesnt-exist.json -t not-a-theme
 14|build doesnt-exist.json -t node_modules/not-a-theme

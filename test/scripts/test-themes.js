@@ -75,7 +75,7 @@ function genThemes( title, src, fmt ) {
     //genTheme(fmt, src, 'hello-world');
     genTheme(fmt, src, 'compact');
     genTheme(fmt, src, 'modern');
-    genTheme(fmt, src, 'underscore', 'node_modules/fresh-theme-underscore' );
+  // UNDERSCORE theme (FRESH) is deprecated/removed; using JSON Resume themes instead
     genTheme(fmt, src, 'awesome');
     genTheme(fmt, src, 'positive');
 
@@ -118,19 +118,19 @@ function foldersMatch( a, b ) {
 
 genThemes(
   'jane-q-fullstacker',
-  ['node_modules/fresh-test-resumes/src/fresh/jane-fullstacker.json'],
-  'FRESH'
+  ['test/fixtures/jrs/jane-fullstacker.json'],
+  'JRS'
 );
 
 genThemes(
   'johnny-trouble',
-  ['node_modules/fresh-test-resumes/src/fresh/johnny-trouble.json'],
-  'FRESH'
+  ['test/fixtures/jrs/john-doe.json'],
+  'JRS'
 );
 
 genThemes(
   'richard-hendriks',
-  ['node_modules/fresh-test-resumes/src/jrs/richard-hendriks.json'],
+  ['test/fixtures/jrs/richard-hendriks.json'],
   'JRS'
 );
 

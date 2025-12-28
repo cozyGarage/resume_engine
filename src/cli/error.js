@@ -101,7 +101,7 @@ module.exports = {
 };
 
 
-var _defaultLog = function() { return console.log.apply(console.log, arguments); }; // eslint-disable-line no-console
+var _defaultLog = function() { return console.log.apply(console.log, arguments); };  
 
 
 
@@ -213,7 +213,7 @@ var assembleError = function( ex ) {
 
     case HMSTATUS.readError:
       if (!ex.quiet) {
-        // eslint-disable-next-line no-console
+         
         console.error(printf( M2C(this.msgs.readError.msg, 'red'), ex.file));
       }
       msg = ex.inner.toString();
@@ -246,7 +246,7 @@ var assembleError = function( ex ) {
 
     case HMSTATUS.parseError:
       if (SyntaxErrorEx.is(ex.inner)) {
-        // eslint-disable-next-line no-console
+         
         console.error(printf( M2C(this.msgs.readError.msg, 'red'), ex.file ));
         se = new SyntaxErrorEx(ex, ex.raw);
         if ((se.line != null) && (se.col != null)) {
@@ -278,7 +278,7 @@ var assembleError = function( ex ) {
     case HMSTATUS.invalidOptionsFile:
       msg = M2C(this.msgs.invalidOptionsFile.msg[0]);
       if (SyntaxErrorEx.is(ex.inner)) {
-        // eslint-disable-next-line no-console
+         
         console.error(printf( M2C(this.msgs.readError.msg, 'red'), ex.file ));
         se = new SyntaxErrorEx(ex, ex.raw);
         if ((se.line != null) && (se.col != null)) {

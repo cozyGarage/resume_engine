@@ -38,7 +38,7 @@ The primary CLI entrypoint is `hackmyresume`.
 
 Examples
 
-Create a new resume in FRESH format:
+Create a new resume (JSON Resume - JRS):
 
 ```bash
 hackmyresume new my-resume.json
@@ -53,7 +53,7 @@ hackmyresume analyze my-resume.json
 Build a resume to HTML & PDF (using a theme):
 
 ```bash
-hackmyresume build my-resume.json TO resume.html --theme modern --pdf wkhtmltopdf
+	hackmyresume build my-resume.json TO resume.html --theme modern --pdf wkhtmltopdf
 ```
 
 Programmatic Usage - CommonJS

@@ -17,7 +17,7 @@ const MD = require('marked');
 const XML = require('xml-escape');
 const PATH = require('path');
 const parsePath = require('parse-filepath');
-const MKDIRP = require('mkdirp');
+// Use fs-extra's ensureDirSync to create directories recursively.
 const BaseGenerator = require('./base-generator');
 const EXTEND = require('extend');
 
@@ -137,7 +137,7 @@ class TemplateGenerator extends BaseGenerator {
       if (typeof opts.beforeWrite === 'function') {
         opts.beforeWrite({data: thisFilePath});
       }
-      MKDIRP.sync(PATH.dirname( thisFilePath ));
+  FS.ensureDirSync(PATH.dirname( thisFilePath ));
 
       if (file.info.action !== 'copy') {
         FS.writeFileSync(thisFilePath, file.data, {encoding: 'utf8', flags: 'w'});
@@ -166,7 +166,7 @@ class TemplateGenerator extends BaseGenerator {
 
   /** Perform a single resume resume transformation using string-based inputs
   and outputs without touching the local file system.
-  @param json A FRESH or JRS resume object.
+  @param json A JSON Resume (JRS) or FRESH resume object.
   @param jst The stringified template data
   @param format The format name, such as "html" or "latex"
   @param cssInfo Needs to be refactored.
@@ -273,11 +273,11 @@ var _defaultOpts = {
 
 
 /** Regexes for linebreak preservation. */
-/* eslint-disable no-control-regex */
+ 
 var _reg = {
   regN: new RegExp( '\n', 'g' ),
   regR: new RegExp( '\r', 'g' ),
   regSymN: new RegExp( _defaultOpts.nSym, 'g' ),
   regSymR: new RegExp( _defaultOpts.rSym, 'g' )
 };
-/* eslint-enable no-control-regex */
+ 

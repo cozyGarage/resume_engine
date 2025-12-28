@@ -23,7 +23,7 @@ const HMR = require('./src/index');
 Main exports:
 - `HMR.verbs` — Classes for verbs: `build`, `analyze`, `validate`, `convert`, `new`, `peek`
 - `HMR.FluentDate` — Date helper used by libs and tests
-- `HMR.ResumeFactory` — Load/convert FRESH and JRS resumes programmatically
+- `HMR.ResumeFactory` — Load/convert JSON Resume (JRS) and optional legacy FRESH resumes programmatically (JRS preferred)
 - `HMR.HtmlGenerator`, `HMR.TextGenerator`, etc. — Specific generator modules
 
 ## Using the verbs

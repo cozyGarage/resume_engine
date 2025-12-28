@@ -123,17 +123,17 @@ describe('Testing Ouput interface', function () {
   run('HMR should accept raw JSON via --options',
       [
         'build',
-        'node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json',
+        'test/fixtures/jrs/jane-fullstacker.json',
         'to',
         'test/sandbox/temp/janeq-1.all',
           '-o',
-          '{ theme: \'jsonresume-theme-classy\', debug: true, pdf: \'wkhtmltopdf\' }'],
-      [ 'Applying JSONRESUME-THEME-CLASSY theme', '(with wkhtmltopdf)'] );
+          '{ "theme": "jsonresume-theme-classy", "debug": true, "pdf": "wkhtmltopdf" }'],
+      [ 'Applying JSONRESUME-THEME-CLASSY theme' ] );
 
   run('HMR should accept a JSON settings file via --options',
       [
         'build',
-        'node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json',
+        'test/fixtures/jrs/jane-fullstacker.json',
         'to',
         'test/sandbox/temp/janeq-2.all',
         '--options',
@@ -143,7 +143,7 @@ describe('Testing Ouput interface', function () {
   run('Explicit command line options should override --options',
       [
         'build',
-        'node_modules/fresh-test-resumes/src/jrs/jane-fullstacker.json',
+        'test/fixtures/jrs/jane-fullstacker.json',
         'to',
         'test/sandbox/temp/janeq-3.all',
         '--options',

@@ -18,6 +18,7 @@ const SLASH = require('slash');
 const _ = require('underscore');
 const HMSTATUS = require('../core/status-codes');
 const SPAWN = require('../utils/safe-spawn');
+const { checkPdfEngine, getBestAvailablePdfEngine, getPdfEngineInstallHint } = require('../utils/pdf-engines');
 
 
 /**
@@ -40,6 +41,25 @@ class HtmlPdfCLIGenerator extends TemplateGenerator {
     if ((info.ext !== 'html') && (info.ext !== 'pdf')) { return info.mk; }
     let safe_eng = info.opts.pdf || 'wkhtmltopdf';
     if (safe_eng === 'phantom') { safe_eng = 'phantomjs'; }
+
+    // Check if the specified engine is available
+    const engineCheck = checkPdfEngine(safe_eng);
+    if (!engineCheck.available) {
+      // Try to find an alternative engine
+      const bestEngine = getBestAvailablePdfEngine();
+      if (bestEngine) {
+        console.warn(`Warning: ${safe_eng} is not available. Using ${bestEngine.name} instead.`);
+        safe_eng = bestEngine.engine;
+      } else {
+        // No PDF engine available - provide helpful error
+        const hint = getPdfEngineInstallHint();
+        this.errHandler && this.errHandler.err(HMSTATUS.pdfGeneration, {
+          message: `PDF generation failed. ${engineCheck.error}\n\n${hint}`
+        });
+        return null;
+      }
+    }
+
     if (_.has(engines, safe_eng)) {
       this.errHandler = info.opts.errHandler;
       engines[ safe_eng ].call(this, info.mk, info.outputFile, info.opts, this.onError);

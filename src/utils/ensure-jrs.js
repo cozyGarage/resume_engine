@@ -28,6 +28,17 @@ module.exports = function ensureJrs(resumeJson) {
 
   const detectedFormat = detectFormat(resumeJson);
 
+  // Treat an empty object as a JRS resume and provide default starter fields
+  // to ensure downstream consumers receive a valid JRS structure.
+  if ((detectedFormat === 'unk') && (Object.keys(resumeJson).length === 0)) {
+    const starter = require('../core/jrs-starter').jrs;
+    return {
+      json: ensureMeta(starter, true),
+      detectedFormat: 'jrs',
+      wasConverted: false
+    };
+  }
+
   if (detectedFormat === 'fresh') {
     if (!ResumeConverter) {
       throw new Error('FRESH support has been removed: automatic conversion to JRS is not available. Please convert the resume to JSON Resume (JRS) format externally or reinstall "fresh-jrs-converter".');

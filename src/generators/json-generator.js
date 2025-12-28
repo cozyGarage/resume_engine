@@ -18,7 +18,7 @@ try {
   FJCV = null;
 }
 
-/** The JsonGenerator generates a FRESH or JRS resume as an output. */
+/** The JsonGenerator generates a JSON Resume (JRS) or FRESH resume as an output. */
 
 class JsonGenerator extends BaseGenerator {
 

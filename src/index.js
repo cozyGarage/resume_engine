@@ -40,5 +40,11 @@ module.exports = {
   YamlGenerator:        require('./generators/yaml-generator'),
   JsonYamlGenerator:    require('./generators/json-yaml-generator'),
   LaTeXGenerator:       require('./generators/latex-generator'),
-  HtmlPngGenerator:     require('./generators/html-png-generator')
+  HtmlPngGenerator:     require('./generators/html-png-generator'),
+
+  // Utilities
+  utils: {
+    pdfEngines:         require('./utils/pdf-engines'),
+    resumeDetector:     require('./utils/resume-detector')
+  }
 };

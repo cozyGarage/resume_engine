@@ -13,13 +13,17 @@ Implementation of the 'analyze' verb for HackMyResume.
 
 const HMEVENT       = require('../core/event-codes');
 const HMSTATUS      = require('../core/status-codes');
-const _             = require('underscore');
+// underscore not required anymore; use native array/object methods.
 const ResumeFactory = require('../core/resume-factory');
 const Verb          = require('../verbs/verb');
 
 
 
 /** An invokable resume analysis command. */
+/**
+ * AnalyzeVerb — Analyze one or more resumes for coverage, gaps, totals, and
+ * keywords. Uses inspector modules to compute results.
+ */
 class AnalyzeVerb extends Verb {
   constructor() { super('analyze', _analyze); }
 }
@@ -28,8 +32,11 @@ module.exports = AnalyzeVerb;
 
 
 
-/** Private workhorse for the 'analyze' command. */
-var _analyze = function( sources, dst, opts ) {
+/**
+ * Private workhorse for the 'analyze' command. Loads resumes and runs
+ * configured inspectors.
+ */
+const _analyze = function(sources, dst, opts) {
 
   if (!sources || !sources.length) {
     this.err(HMSTATUS.resumeNotFound, { quit: true });
@@ -37,7 +44,7 @@ var _analyze = function( sources, dst, opts ) {
   }
 
   const nlzrs = _loadInspectors();
-  const results = _.map(sources, function(src) {
+  const results = sources.map(src => {
   const r = ResumeFactory.loadOne(src, { format: 'JRS', objectify: true, inner: {
       private: opts.private === true
     }
@@ -52,7 +59,7 @@ var _analyze = function( sources, dst, opts ) {
       return _analyzeOne.call(this, r, nlzrs, opts);
     }
   }
-  , this);
+  );
 
 
   if (this.hasError() && !opts.assert) {
@@ -66,21 +73,24 @@ var _analyze = function( sources, dst, opts ) {
 
 
 /** Analyze a single resume. */
-var _analyzeOne = function( resumeObject, nlzrs ) {
+/**
+ * Run analysis on a single resume object using the provided inspectors.
+ */
+const _analyzeOne = function(resumeObject, nlzrs) {
   const { rez } = resumeObject;
   const safeFormat =
     rez.meta && rez.meta.format && rez.meta.format.startsWith('FRESH')
     ? 'FRESH' : 'JRS';
 
   this.stat( HMEVENT.beforeAnalyze, { fmt: safeFormat, file: resumeObject.file });
-  const info = _.mapObject(nlzrs, (val) => val.run(rez));
+  const info = Object.fromEntries(Object.entries(nlzrs).map(([k, v]) => [k, v.run(rez)]));
   this.stat(HMEVENT.afterAnalyze, { info });
   return info;
 };
 
 
 
-var _loadInspectors = () =>
+const _loadInspectors = () =>
   ({
     totals: require('../inspectors/totals-inspector'),
     coverage: require('../inspectors/gap-inspector'),

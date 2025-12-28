@@ -9,7 +9,7 @@ HackMyResume
 *Create polished résumés and CVs in multiple formats from your command line or
 shell. Author in clean Markdown and JSON, export to Word, HTML, PDF, LaTeX,
 plain text, and other arbitrary formats. Fight the power, save trees. Compatible
-with [][fresca] and [JRS][6] resumes.*
+with [JSON Resume (JRS)][6] and legacy [FRESCA][fresca] resumes.*
 
 ![](assets/hmr_build.png)
 
@@ -21,7 +21,7 @@ YAML, print, smoke signal, carrier pigeon, and other arbitrary-format resumes
 and CVs, from a single source of truth&mdash;without violating DRY.
 2. **Analyze** your resume for keyword density, gaps/overlaps, and other
 metrics.
-3. **Convert** resumes between [][fresca] and [JSON Resume][6] formats.
+3. **Convert** resumes between [JSON Resume][6] and legacy [FRESCA][fresca] formats.
 4. **Validate** resumes against either format.
 
 HackMyResume is built with Node.js and runs on recent versions of OS X, Linux,
@@ -95,6 +95,68 @@ b.invoke(['path/to/resume.json'], ['out/resume.html'], {theme: 'modern', pdf: 'n
 Notes:
 - The programmatic API exposes key verbs as classes in `HMR.verbs` (build, analyze, validate, convert, new, peek).
 - Each verb is an instance of `Verb` and supports `invoke(...)` that returns a Promise; you can also subscribe to status & error events via `.on('status', ...)` and `.on('error', ...)`.
+
+### Utility Modules
+
+HackMyResume exposes utility modules for advanced use cases:
+
+#### PDF Engine Detection
+
+Check which PDF engines are available on your system:
+
+```js
+const HMR = require('hackmyresume');
+const { checkPdfEngine, getAvailablePdfEngines, getBestAvailablePdfEngine } = HMR.utils.pdfEngines;
+
+// Check if a specific engine is available
+const wkCheck = checkPdfEngine('wkhtmltopdf');
+console.log(wkCheck.available); // true or false
+console.log(wkCheck.error);     // null or error message
+
+// Get all available PDF engines
+const available = getAvailablePdfEngines();
+console.log(available); // [{ engine: 'wkhtmltopdf', available: true, ... }, ...]
+
+// Get the best available engine (prefers wkhtmltopdf > weasyprint > phantomjs)
+const best = getBestAvailablePdfEngine();
+if (best) {
+  console.log(`Using ${best.name} for PDF generation`);
+} else {
+  console.log('No PDF engine available');
+}
+```
+
+#### Resume Format Detection
+
+Detect whether a resume is in JSON Resume (JRS) or FRESH format:
+
+```js
+const HMR = require('hackmyresume');
+const detectFormat = HMR.utils.resumeDetector;
+
+// Detect JRS format
+const jrsResume = { basics: { name: 'John Doe' } };
+console.log(detectFormat(jrsResume)); // 'jrs'
+
+// Detect FRESH format
+const freshResume = { info: { name: 'John Doe' }, employment: {} };
+console.log(detectFormat(freshResume)); // 'fresh'
+
+// Unknown format
+console.log(detectFormat({})); // 'unk'
+```
+
+### CLI Options
+
+Pass JSON options directly on the command line with `-o` or `--options`:
+
+```bash
+# Pass options as valid JSON (requires double quotes)
+hackmyresume build resume.json to out/resume.all -o '{"theme": "modern", "pdf": "wkhtmltopdf"}'
+
+# Or use an options file
+hackmyresume build resume.json to out/resume.all --options options.json
+```
 
 Publishing as a package
 ----------------------
@@ -180,6 +242,16 @@ résumé themes.
 
 To install a JSON Resume theme, just `cd` to the folder where you want to store
 your themes and run one of:
+
+Example: install and use a theme from https://jsonresume.org/themes
+
+```bash
+# Install a JSON Resume theme locally (for example 'classy')
+npm install jsonresume-theme-classy
+
+# Build a resume using the installed theme (point to the node_modules path)
+hackmyresume BUILD resume.json --theme node_modules/jsonresume-theme-classy
+```
 
 ```bash
 # Install with NPM

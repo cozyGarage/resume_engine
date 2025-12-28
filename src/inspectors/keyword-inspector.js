@@ -35,12 +35,12 @@ module.exports = {
     // http://stackoverflow.com/a/2593661/4942583
     const regex_quote = str => (str + '').replace(/[.?*+^$[\]\\(){}|-]/ig, '\\$&');
 
+    // Get all keywords from the resume first
+    const allKeywords = rez.keywords ? rez.keywords() : [];
+
     // Create a searchable plain-text digest of the resume
-    // TODO: BUG: Don't search within keywords for other keywords. Job A
-    // declares the "foo" keyword. Job B declares the "foo & bar" keyword. Job
-    // B's mention of "foobar" should not count as a mention of "foo".
-    // To achieve this, remove keywords from the search digest and treat them
-    // separately.
+    // Fix for BUG: Don't search within keywords for other keywords.
+    // We replace exact keyword matches with placeholders before searching.
     let searchable = '';
     const snapshot = (rez && typeof rez.dupe === 'function')
       ? rez.dupe()
@@ -50,12 +50,31 @@ module.exports = {
       return val;
     });
 
+    // Sort keywords by length (longest first) to prevent partial matches
+    // when masking. E.g., "foo & bar" should be masked before "foo".
+    const sortedKeywords = [...allKeywords].sort((a, b) => b.length - a.length);
+
+    // Create a masked version of searchable for each keyword
+    // This prevents keywords from being counted within other keywords
+    const createMaskedSearchable = (searchText, currentKeyword) => {
+      let masked = searchText;
+      // Mask all other keywords that contain the current keyword as a substring
+      sortedKeywords.forEach(kw => {
+        if (kw !== currentKeyword && kw.toLowerCase().includes(currentKeyword.toLowerCase())) {
+          // Replace the longer keyword with a placeholder that won't match
+          const kwRegex = new RegExp(regex_quote(kw), 'gi');
+          masked = masked.replace(kwRegex, '\x00'.repeat(kw.length));
+        }
+      });
+      return masked;
+    };
+
     // Assemble a regex skeleton we can use to test for keywords with a bit
-    // more
+    // more accuracy
     const prefix = `(?:${['^', '\\s+', '[\\.,]+'].join('|')})`;
     const suffix = `(?:${['$', '\\s+', '[\\.,]+'].join('|')})`;
 
-    return rez.keywords().map(function(kw) {
+    return allKeywords.map(function(kw) {
 
       // 1. Using word boundary or other regex class is inaccurate
       //
@@ -70,8 +89,12 @@ module.exports = {
 
       const regex_str = prefix + regex_quote( kw ) + suffix;
       const regex = new RegExp( regex_str, 'ig');
+
+      // Use masked searchable to prevent counting keywords within other keywords
+      const maskedSearchable = createMaskedSearchable(searchable, kw);
+
       let count = 0;
-      while (regex.exec( searchable ) !== null) {
+      while (regex.exec( maskedSearchable ) !== null) {
         count++;
       }
       return {

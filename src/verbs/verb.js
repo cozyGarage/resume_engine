@@ -29,7 +29,12 @@ class Verb {
 
 
   /** Constructor. Automatically called at creation. */
-  constructor( moniker, workhorse ) {
+  /**
+  Create a verb instance.
+  @param {String} moniker An identifying name for the command (e.g. "build").
+  @param {Function} workhorse The implementation function invoked by this verb.
+  */
+  constructor(moniker, workhorse) {
     this.moniker = moniker;
     this.workhorse = workhorse;
     this.emitter = new EVENTS.EventEmitter();
@@ -38,61 +43,68 @@ class Verb {
 
 
   /** Invoke the command. */
-  invoke() {
+  invoke(...args) {
+    // Emit the 'begin' notification for this verb
+    this.stat(HMEVENT.begin, { cmd: this.moniker });
 
-    // Sent the 'begin' notification for this verb
-    this.stat(HMEVENT.begin, {cmd: this.moniker});
-
-    // Prepare command arguments
-    const argsArray = Array.prototype.slice.call(arguments);
-
-    // Create a promise for this verb instance
-    const that = this;
-    return this.promise = new Promise(function(res, rej) {
-      that.resolve = res;
-      that.reject = rej;
-      that.workhorse.apply(that, argsArray);
+    // Create a promise for this verb instance and call the underlying
+    // workhorse function. Save resolve/reject handlers for external control.
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+      this.workhorse.apply(this, args);
     });
+    return this.promise;
   }
 
 
 
   /** Forward subscriptions to the event emitter. */
-  on() { return this.emitter.on.apply(this.emitter, arguments); }
+  on(...args) { return this.emitter.on.apply(this.emitter, args); }
 
 
 
   /** Fire an arbitrary event, scoped to "hmr:". */
-  fire(evtName, payload) {
-    payload = payload || { };
-    payload.cmd = this.moniker;
-    this.emitter.emit(`hmr:${evtName}`, payload);
+  /**
+  Emit an event prefixed with "hmr:" for this verb instance.
+  The payload will always include the command name under the `cmd` key.
+  */
+  fire(evtName, payload = {}) {
+    const pl = Object.assign({}, payload, { cmd: this.moniker });
+    this.emitter.emit(`hmr:${evtName}`, pl);
     return true;
   }
 
 
 
   /** Handle an error condition. */
-  err( errorCode, payload, hot ) {
-    payload = payload || { };
+  /**
+  Handle an error condition during command invocation.
+
+  - `errorCode` is an HMR status code (numeric/string).
+  - `payload` is additional contextual information about the error.
+  - `hot` indicates whether the error should be thrown immediately.
+  */
+  err(errorCode, payload = {}, hot = false) {
     payload.sub = (payload.fluenterror = errorCode);
     payload.throw = hot;
     this.setError(errorCode, payload);
-    if (payload.quit) {
+    if (payload.quit && typeof this.reject === 'function') {
       this.reject(errorCode);
     }
     this.fire('error', payload);
-    if (hot) {
-      throw payload;
-    }
+    if (hot) { throw payload; }
     return true;
   }
 
 
 
   /** Fire the 'hmr:status' error event. */
-  stat( subEvent, payload ) {
-    payload = payload || { };
+  /**
+  Publish a status event (e.g. "begin", "afterRead", "beforeGenerate").
+  The `subEvent` is often an HMEVENT constant.
+  */
+  stat(subEvent, payload = {}) {
     payload.sub = subEvent;
     this.fire('status', payload);
     return true;
@@ -101,12 +113,12 @@ class Verb {
 
 
   /** Has an error occurred during this verb invocation? */
-  hasError() { return this.errorCode || this.errorObj; }
+  hasError() { return Boolean(this.errorCode || this.errorObj); }
 
 
 
   /** Associate error info with the invocation. */
-  setError( code, obj ) {
+  setError(code, obj) {
     this.errorCode = code;
     this.errorObj = obj;
   }

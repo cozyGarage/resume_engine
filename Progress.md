@@ -16,15 +16,6 @@ What I did
   2. `src/core/fluent-date.js` — added support for an `HMR_NOW` environment variable to pin "now" for deterministic duration computations during tests; also made null/empty date handling respect `HMR_NOW`.
   3. `src/inspectors/duration-inspector.js` — adjusted logic to ignore entries that lack meaningful start/end values (avoids treating `null` starts as "current" roles).
 - Verified the full test suite under Bun: 174 passing tests.
-
-Files changed (summary)
-
-- `package.json` — added Bun helper scripts (non-destructive).
-- `test/scripts/test-cli.js` — run local CLI via node in tests.
-- `scripts/clean-test-sandbox.js` — Node helper to clean the test sandbox; mirrors the Grunt 'clean:test' task for Node-based tests.
-- `src/core/fluent-date.js` — respect `HMR_NOW` for deterministic "now" handling.
-- `src/inspectors/duration-inspector.js` — refined duration calculations for null/empty dates.
-
 How to reproduce locally
 
 Prereqs: Bun installed. If not installed, run the official installer:
@@ -156,24 +147,3 @@ Decision criteria: refactor vs rewrite
    fixes, or
   - You need to change core data models or architecture that are easier to
    re-implement from scratch.
-
-Next actions (after PR)
-1. Add a CI workflow for Bun (GitHub Actions). The workflow should:
-  - Install Bun (via the official script),
-  - Run `bun install`,
-  - Run tests with `HMR_NOW=2018-01-01`,
-  - Optionally install wkhtmltopdf for PDF-related tests if desired.
-2. Update README with a "Developer (Bun)" section describing `bun install` and
-  `bunx grunt test` plus the `HMR_NOW` usage.
-3. Audit and pin any other ESM-only deps or replace them with compatible
-  alternatives.
-4. (Optional) After CI is reliable, incrementally remove Grunt by converting
-  tasks to npm/Bun scripts.
-
-If you want, I can create the GitHub Actions workflow and a small README
-section in the same branch and commit them, then provide the exact commands
-to push and open a PR on your fork or upstream repository.
-
----
-
-End of report

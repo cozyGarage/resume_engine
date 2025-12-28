@@ -14,20 +14,27 @@ Implementation of the 'validate' verb for HackMyResume.
 const Verb = require('../verbs/verb');
 const HMSTATUS = require('../core/status-codes');
 const HMEVENT = require('../core/event-codes');
-const _ = require('underscore');
+// Using native array methods; no underscore needed here.
 const safeLoadJSON = require('../utils/safe-json-loader');
 
 
 
 /** An invokable resume validation command. */
+/**
+ * ValidateVerb — Validate one or more resumes against the JSON Resume
+ * schema and return a compact results array indicating validity and errors.
+ */
 class ValidateVerb extends Verb {
   constructor() { super('validate', _validate); }
 }
 
 
 
-// Validate 1 to N resumes in FRESH or JSON Resume format.
-var _validate = function(sources, unused, opts)  {
+// Validate 1 to N resumes in JSON Resume (JRS) or FRESH format.
+/**
+ * Validate one or more resumes. Returns an array of validation results.
+ */
+const _validate = function(sources, unused, opts) {
 
   if (!sources || !sources.length) {
     this.err(HMSTATUS.resumeNotFoundAlt, {quit: true});
@@ -39,12 +46,11 @@ var _validate = function(sources, unused, opts)  {
     jars: require('../core/resume.json')
   };
 
-  const results = _.map(sources, function(t)  {
+  const results = sources.map( t => {
     const r = _validateOne.call(this, t, validator, schemas, opts);
     if (r.error) { this.err(r.error.fluenterror, r.error); }
     return r;
-  }
-  , this);
+  });
 
   if (this.hasError() && !opts.assert) {
     this.reject(this.errorCode);
@@ -67,7 +73,10 @@ Validate a single resume.
   error: <errorObject>
 }
 */
-var _validateOne = function(t, validator, schemas) {
+/**
+ * Validate a single resume file and return its status object.
+ */
+const _validateOne = function(t, validator, schemas) {
 
   const ret = {file: t, isValid: false, status: 'unknown', schema: '-----'};
 

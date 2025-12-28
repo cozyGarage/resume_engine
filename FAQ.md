@@ -10,9 +10,10 @@ Frequently Asked Questions (FAQ)
 3. Test with `hackmyresume BUILD <resume-name>.json`. Look in the `out/` folder.
 
 4. Play around with different themes with the `-t` or `--theme` parameter.
-You can use any [FRESH](https://github.com/fluentdesk/fresh-themes) or
-[JSON Resume](https://jsonresume.org/themes) theme. The latter have to be
-installed first.
+You can use any [JSON Resume (JRS)](https://jsonresume.org/themes) or legacy
+`FRESH` (FRESCA) theme with HackMyResume. JSON Resume themes are the
+recommended/modern option and should be preferred; FRESH themes are
+supported for backwards compatibility.
 
 ## What is FRESH?
 
@@ -22,24 +23,24 @@ technical candidates and recruiters.
 
 ## What is FRESCA?
 
-The **F**RESH **R**esume and **E**mployment **SC**hem**A**&mdash;an open-source,
-JSON-driven schema for resumes, CVs, and other employment artifacts. FRESCA is
-the recommended schema/format for FRESH, with optional support for JSON Resume.
+FRESCA is the schema historically used by the FRESH format. It's a
+JSON-driven schema for resumes and curriculum vitae. For modern tooling and
+cross-project compatibility, we recommend using JSON Resume (JRS) as the
+canonical format; FRESCA/FRESH remains available for legacy workflows.
 
-## What is JSON Resume?
+## What is JSON Resume (JRS)?
 
 An [open resume standard](http://jsonresume.org/themes/) sponsored by Hired.com.
 Like FRESCA, JSON Resume is JSON-driven and open-source. Unlike FRESCA, JSON
 Resume targets a worldwide audience where FRESCA is optimized for technical
 candidates.
 
-## Should I use the FRESH or JSON Resume format/schema for my resume?
+## Should I use JSON Resume (JRS) or FRESH (legacy)?
 
-Both! The workflow we like to use:
-
-1. Create a resume in FRESH format for tooling and analysis.
-2. Convert it to JSON Resume format for additional themes/tools.
-3. Maintain both versions.
+Prefer JSON Resume (JRS) where possible — it's the modern, broadly adopted
+standard and has the best cross-tool support. If you depend on features or
+themes that are only available in FRESH, continue to use FRESH, but consider
+exporting a JRS copy for compatibility with the wider ecosystem.
 
 Both formats are open-source and both formats are JSON-driven. FRESH was
 designed as a universal container format and superset of existing formats, where
@@ -58,9 +59,17 @@ installed from NPM and GitHub.
     hackmyresume build resume.json --theme compact
     ```
 
-### To use an external FRESH theme:
+### To use an external theme (JRS recommended):
 
 1. Install the theme locally. The easiest way to do that is with NPM.
+
+    JSON Resume themes:
+
+    ```bash
+    npm install jsonresume-theme-classy
+    ```
+
+    FRESH legacy themes (if you still need FRESH formatting):
 
     ```bash
     npm install fresh-theme-underscore
@@ -69,6 +78,8 @@ installed from NPM and GitHub.
 2. Pass the theme folder into HackMyResume:
 
     ```bash
+    hackmyresume BUILD resume.json --theme node_modules/jsonresume-theme-classy
+    # or (legacy FRESH)
     hackmyresume BUILD resume.json --theme node_modules/fresh-theme-underscore
     ```
 
@@ -97,13 +108,14 @@ server connection.
 
 ## Should I keep my resume in version control?
 
-Absolutely! As text-based, JSON-driven documents, both FRESH and JSON Resume are
+Absolutely! As text-based, JSON-driven documents, both JSON Resume (JRS) and FRESH are
 ideal candidates for version control. Future versions of HackMyResume will have
 this functionality built in.
 
 ## Can I change the default section titles ("Employment", "Skills", etc.)?
 
-If you're using a FRESH theme, yes. First, create a HackMyResume options file
+If you're using a theme that supports section-title customization (FRESH or
+some JRS themes), yes. First, create a HackMyResume options file
 mapping resume sections to your preferred section title:
 
 ```javascript
@@ -123,7 +135,8 @@ Then, pass the options file into the `-o` or `--opts` parameter:
 hackmyresume BUILD resume.json -o myoptions.json
 ```
 
-This ability is currently only supported for FRESH resume themes.
+This ability is currently best supported for FRESH resume themes; some
+JSON Resume themes may provide similar configuration.
 
 ## How does resume merging work?
 
@@ -133,10 +146,10 @@ specific output formats like HTML or PDF. It's a way of producing flexible,
 configurable, targeted resumes with minimal duplication.
 
 For example, a software developer who moonlights as a game programmer might
-create three FRESH or JRS resumes at different levels of specificity:
+create three JSON Resume (JRS) or FRESH resumes at different levels of specificity:
 
-- **generic.json**: A generic technical resume, suitable for all audiences.
-- **game-developer.json**: Overrides and amendments for game developer
+-- **generic.json**: A generic technical resume, suitable for all audiences.
+ - **game-developer.json**: Overrides and amendments for game developer
 positions.
 - **blizzard.json**: Overrides and amendments specific to a hypothetical
 position at Blizzard.
@@ -194,7 +207,7 @@ themes it encounters.
 
 ## Do I have to have a FRESH resume to use a FRESH theme or a JSON Resume to use a JSON Resume theme?
 
-No. You can mix and match FRESH and JRS-format themes freely. HackMyResume will
+No. You can mix and match JSON Resume and FRESH-format themes freely. HackMyResume will
 perform the necessary conversions on the fly.
 
 ## Can I build my own custom FRESH theme?

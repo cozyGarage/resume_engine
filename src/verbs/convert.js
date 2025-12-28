@@ -14,11 +14,15 @@ Implementation of the 'convert' verb for HackMyResume.
 const ResumeFactory = require('../core/resume-factory');
 const Verb = require('../verbs/verb');
 const HMSTATUS = require('../core/status-codes');
-const _ = require('underscore');
 const HMEVENT = require('../core/event-codes');
+const detectResumeFormat = require('../utils/resume-detector');
 
 
 
+/**
+ * ConvertVerb — Converts resume files between JSON Resume (JRS) and the
+ * legacy FRESH format (if conversion utilities are available).
+ */
 class ConvertVerb extends Verb {
   constructor() { super('convert', _convert); }
 }
@@ -27,9 +31,11 @@ module.exports = ConvertVerb;
 
 
 
-/** Private workhorse method. Normalize 0..N resumes to the JRS format. */
-
-var _convert = function( srcs, dst, opts ) {
+/**
+ * Private workhorse method. Convert/reserialize JRS or legacy
+ * resumes into the requested target format (JRS by default).
+ */
+const _convert = function(srcs, dst, opts) {
 
   opts = opts || {};
 
@@ -58,7 +64,7 @@ var _convert = function( srcs, dst, opts ) {
   }
 
   const fmtUp = opts.format ? opts.format.trim().toUpperCase() : 'JRS';
-  if (!_.contains(['JRS','JRS@1','JRS@1.0','JRS@EDGE'], fmtUp)) {
+  if (!['JRS', 'JRS@1', 'JRS@1.0', 'JRS@EDGE'].includes(fmtUp)) {
     this.err(HMSTATUS.invalidSchemaVersion, {data: opts.format || 'JRS', quit: true});
   }
 
@@ -69,19 +75,16 @@ var _convert = function( srcs, dst, opts ) {
   }
 
   // Map each source resume to the converted destination resume
-  const results = _.map(srcs, function( src, idx ) {
-
+  const results = srcs.map( (src, idx) => {
     // Convert each resume in turn
-  const r = _convertOne.call(this, src, dst, idx);
-
+    const r = _convertOne.call(this, src, dst, idx);
     // Handle conversion errors
-    if (r.fluenterror) {
+    if (r && r.fluenterror) {
       r.quit = opts.assert;
       this.err(r.fluenterror, r);
     }
     return r;
-  }
-  , this);
+  });
 
 
   if (this.hasError() && !opts.assert) {
@@ -95,7 +98,8 @@ var _convert = function( srcs, dst, opts ) {
 
 
 /** Private workhorse method. Convert a single resume. */
-var _convertOne = function(src, dst, idx) {
+/** Convert a single resume. */
+const _convertOne = function(src, dst, idx) {
 
   // Load the resume
   const rinfo = ResumeFactory.loadOne(src, {
@@ -121,10 +125,12 @@ var _convertOne = function(src, dst, idx) {
     return rinfo;
   }
 
-  // Determine the resume's SOURCE format
-  // TODO: replace with detector component
+  // Determine the resume's SOURCE format using the detector component
   const { rez } = rinfo;
-  const srcFmt = (rinfo && rinfo.format) ? rinfo.format.toUpperCase() : 'JRS';
+  const detectedFormat = detectResumeFormat(rez);
+  const srcFmt = detectedFormat !== 'unk'
+    ? detectedFormat.toUpperCase()
+    : ((rinfo && rinfo.format) ? rinfo.format.toUpperCase() : 'JRS');
 
   // Determine the TARGET format for the conversion
   const targetFormat = 'JRS';

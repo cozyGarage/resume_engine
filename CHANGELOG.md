@@ -16,9 +16,47 @@ the migration case study and playbook.*
   exercised in CI.
 - Added developer scripts to `package.json` to make Bun-based test runs easy
   (`test:ci`, `test:bun:direct`).
+ - Migration to a JSON Resume-first workflow: defaults and docs prefer JSON
+   Resume (JRS) as the canonical input format. Legacy FRESH (FRESCA) format
+   and themes remain supported for backwards compatibility but are considered
+   legacy and optional moving forward.
 
 More refactor and JSON→PDF migration work will follow in a subsequent
 development phase.
+
+### Bug Fixes
+
+- **Fixed keyword inspector bug**: Keywords that are substrings of other keywords
+  (e.g., "foo" in "foo & bar") are no longer incorrectly counted when appearing
+  within longer keywords. The search now masks longer keywords before searching
+  for shorter ones.
+
+- **Fixed duplicate `HMR_NOW` environment variable** in npm scripts (`test:ci`
+  and `test:ci:2025`) that caused redundant variable assignment.
+
+- **Fixed deprecated `eslint-env` comment** in test files. Replaced with proper
+  `/* global */` comments compatible with ESLint v9+ flat config.
+
+- **Replaced unsafe `eval()` with `JSON.parse()`** for parsing inline JSON
+  options via the `-o` / `--options` CLI flag. This improves security and
+  requires proper JSON syntax (double quotes for keys and strings).
+
+### Added
+
+- **PDF engine availability checker**: New utility module (`utils/pdf-engines`)
+  that detects available PDF engines (wkhtmltopdf, phantomjs, weasyprint) on
+  the system. The PDF generator now automatically falls back to an alternative
+  engine if the requested one is unavailable, with helpful installation hints.
+
+- **Resume format detector integration**: The `convert` verb now uses the
+  `resume-detector` utility to properly identify resume formats (JRS vs FRESH)
+  instead of relying solely on metadata.
+
+- **Exposed utilities in programmatic API**: The `HMR.utils` namespace now
+  exposes `pdfEngines` and `resumeDetector` modules for programmatic use.
+
+- **New programmatic API tests**: Added tests for the new utilities including
+  PDF engine detection and resume format detection.
 
 
 ## v1.9.0-beta
@@ -81,7 +119,7 @@ is still the nickname.
 ### Fixed
 
 - Fixed an issue that would cause the `convert` command to detect the inbound
-resume type (FRESH or JRS) incorrectly (#162).
+resume type (JSON Resume (JRS) or FRESH) incorrectly (#162).
 
 - Fixed an issue where generating new JRS resumes would cause a `null` or
 `undefined` error (#165).
@@ -235,7 +273,7 @@ respectively ([#92][i92]).
 - Improved handling of start and end dates on `employment`, `projects`,
 `education`, and other sections with start/end dates.
 
-- Support for an `.ignore` property on any FRESH or JSON Resume section or field.
+- Support for an `.ignore` property on any JSON Resume (JRS) or FRESH section or field.
 Ignored properties will be treated by HackMyResume as if they weren't present.
 
 - Emit extended status and error info with the `--debug` or `-d` switch.
@@ -399,7 +437,7 @@ open source, commercial, private, personal, and creative projects.
 accessible with `--pdf wkhtmltopdf`.
 - Resumes are now validated, by default, prior to generation. This
 behavior can be disabled with the `--novalidate` or `--force` switch.
-- Syntax errors in source FRESH and JSON Resumes are now captured for all
+- Syntax errors in source JSON Resume (JRS) and FRESH Resumes are now captured for all
 commands.
 - Minor updates to README.
 - Most themes now inherit Markdown and Plain Text formats from the **Basis**
@@ -436,8 +474,8 @@ theme.
 
 ### Changed
 
-- **Distinguish between validation errors and syntax errors** when validating a FRESH or JRS resume with `hackmyresume validate <blah>`.
-- **Emit line and column info** for syntax errors during validation of FRESH and JRS resumes.
+- **Distinguish between validation errors and syntax errors** when validating a JSON Resume (JRS) or FRESH resume with `hackmyresume validate <blah>`.
+- **Emit line and column info** for syntax errors during validation of JSON Resume (JRS) and FRESH resumes.
 - **FRESH themes now embed CSS into HTML formats by default** so that the HTML resume output doesn't have an external CSS file dependency by default. Users can specify normal linked stylesheets by setting `--css=link`.
 - **Renamed fluent-themes repo to fresh-themes** in keeping with the other parts of the project.
 

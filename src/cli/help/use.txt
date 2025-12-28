@@ -10,8 +10,8 @@ Commands: (type "hackmyresume help COMMAND" for details)
    **BUILD**         Build your resume to the destination format(s).
    **ANALYZE**       Analyze your resume for keywords, gaps, and metrics.
    **VALIDATE**      Validate your resume for errors and typos.
-   **NEW**           Create a new resume in FRESH or JSON Resume format.
-   **CONVERT**       Convert your resume between FRESH and JSON Resume.
+   **NEW**           Create a new resume in JSON Resume (JRS) or legacy FRESH format.
+   **CONVERT**       Convert your resume between JSON Resume (JRS) and legacy FRESH format.
    **PEEK**          View a specific field or element on your resume.
    **HELP**          View help on a specific HackMyResume command.
 
@@ -39,7 +39,7 @@ Common Tasks:
 
       **hackmyresume new rez.json**
 
-   Convert a resume between FRESH and JRS formats:
+   Convert a resume between JSON Resume (JRS) and FRESH formats:
 
       **hackmyresume convert rez.json converted.json**
 

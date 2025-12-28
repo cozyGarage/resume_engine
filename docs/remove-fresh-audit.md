@@ -6,7 +6,7 @@ Purpose: capture every remaining reference to the FRESH format/theme stack so we
 
 ## 1. Dependencies & lockfiles
 
-- `bun.lock`, `npm-shrinkwrap.json`: still pin `fresh-jrs-converter`, `fresh-resume-schema`, `fresh-resume-starter`, `fresh-resume-validator`, `fresh-themes`, `fresh-test-resumes`, `fresh-test-themes`, `fresh-theme-underscore`, `fresh-theme-hello-world`, etc. These packages also exist under `node_modules/`.
+- `bun.lock`, `npm-shrinkwrap.json`: still pin runtime FRESH packages like `fresh-jrs-converter`, `fresh-resume-schema`, `fresh-resume-starter`, `fresh-resume-validator`, and `fresh-themes` (these may still be required if FRESH support is retained). Dev-only fixtures such as `fresh-test-resumes`, `fresh-test-themes`, and the sample fresh themes were removed and replaced by in-repo JRS fixtures.
 - Runtime `require(...)` calls for `fresh-jrs-converter`, `fresh-resume-schema`, `fresh-resume-starter`, `fresh-themes` appear in `src/core/*`, `src/generators/json-generator.js`, `src/renderers/handlebars-generator.js`, and `src/verbs/build.js`.
 - CLI diagnostics in `src/cli/main.js` and scripts in `scripts/remove-fresh.js` / `scripts/prepare-remove-fresh.sh` still assume these packages are installed.
 
@@ -19,7 +19,7 @@ Purpose: capture every remaining reference to the FRESH format/theme stack so we
 
 ## 3. Verbs, CLI, and analyzer pipeline
 
-- Verbs: `src/verbs/build.js`, `convert.js`, `create.js`, `validate.js`, `analyze.js`, and `verbs/verb.js` comments all mention FRESH. `build` loads both `FRESH` and `JRS` resume classes, detects mixed sheets, picks theme engine (`theme.engine === 'jrs' ? 'JRS' : 'FRESH'`), and fetches `fresh-themes`. `create` accepts `opts.format` (“FRESH or JRS”). `convert` still describes conversion “between FRESH and JRS”. `analyze` reports format-specific telemetry (`FRESH` vs `JRS`).
+- Verbs: `src/verbs/build.js`, `convert.js`, `create.js`, `validate.js`, `analyze.js`, and `verbs/verb.js` comments all mention FRESH. `build` loads both `FRESH` and `JRS` resume classes, detects mixed sheets, picks theme engine (`theme.engine === 'jrs' ? 'JRS' : 'FRESH'`), and fetches `fresh-themes`. `create` accepts `opts.format` (“JSON Resume (JRS) or FRESH”). `convert` still describes conversion “between JSON Resume (JRS) and FRESH”. `analyze` reports format-specific telemetry (`FRESH` vs `JRS`).
 - CLI artifacts: `src/cli/main.js`, `src/cli/msg.yml`, and every help topic in `src/cli/help/*.txt` explain how to work with FRESH vs JRS themes/resumes.
 - `src/cli/analyze.hbs`, `src/cli/out.js`, and `src/cli/msg.js` include localized strings referencing FRESH support.
 
@@ -41,7 +41,7 @@ Purpose: capture every remaining reference to the FRESH format/theme stack so we
 - Automated tests: `test/scripts/test-fresh-sheet.js`, `test/scripts/test-verbs.js`, `test/scripts/test-dates.js`, `test/scripts/test-output.js`, `test/scripts/test-themes.js`, `test/scripts/test-jrs-sheet.js`, `test/scripts/test-hmr.txt`, `test/scripts/test-programmatic.js`, and `test/all.js` all load `FRESHResume`, `fresh-test-resumes`, or `fresh themes` paths.
 - Fixtures under `test/sandbox/FRESH/` (multiple themes per sample resume) plus `test/sandbox/cli-test/new-empty-resume.fresh.json` and other `.fresh.*` artifacts will be obsolete once FRESH is dropped.
 - `test/expected/modern/resume.yml` references “FRESH” inside generated YAML output.
-- External dev deps: `node_modules/fresh-test-resumes`, `fresh-test-themes`, `fresh-theme-underscore`, etc., are solely used by the above tests and should be removed once tests migrate to JRS-only fixtures.
+- External dev deps: The project previously relied on `node_modules/fresh-test-resumes`, `fresh-test-themes`, `fresh-theme-underscore`, etc. Those dev-only packages have been removed and replaced by local JRS fixtures under `test/fixtures/jrs/`. Remaining references to runtime FRESH packages should be audited to make them optional if removing FRESH entirely.
 
 ## 7. Examples, scripts, and misc assets
 

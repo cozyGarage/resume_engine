@@ -1,0 +1,33 @@
+{
+  "basics": {
+    "name": "Jane Fullstacker",
+    "label": "Fullstack Developer",
+    "email": "jane@example.com",
+    "phone": "555-555-5555",
+    "website": "https://example.com",
+    "summary": "Experienced fullstack developer",
+    "location": { "country": "USA" }
+  },
+  "work": [
+    {
+      "company": "Company A",
+      "position": "Developer",
+      "startDate": "2013-01-01",
+      "endDate": "2017-06-01"
+    },
+    {
+      "company": "Company B",
+      "position": "Senior Developer",
+      "startDate": "2017-07-01",
+      "endDate": "2022-01-01"
+    }
+  ],
+  "volunteer": [],
+  "education": [],
+  "skills": [
+    { "name": "Programming", "keywords": ["JavaScript", "Node.js"] }
+  ],
+  "publications": [],
+  "awards": [],
+  "references": []
+}

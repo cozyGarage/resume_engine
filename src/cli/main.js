@@ -67,9 +67,9 @@ module.exports = function( rawArgs, exitCallback ) {
   program
     .command('new')
     .arguments('<sources...>')
-    .option('-f --format <fmt>', 'FRESH or JRS format', 'FRESH')
+  .option('-f --format <fmt>', 'JRS or legacy FRESH format', 'JRS')
     .alias('create')
-    .description('Create resume(s) in FRESH or JSON RESUME format.')
+  .description('Create resume(s) in JSON Resume (JRS) or legacy FRESH format.')
     .action((function( sources ) {
       execute.call( this, sources, [], this.opts(), logMsg);
     })
@@ -79,7 +79,7 @@ module.exports = function( rawArgs, exitCallback ) {
   program
     .command('validate')
     .arguments('<sources...>')
-    .description('Validate a resume in FRESH or JSON RESUME format.')
+  .description('Validate a resume in JSON Resume (JRS) or legacy FRESH format.')
     .action(function(sources) {
       execute.call( this, sources, [], this.opts(), logMsg);
     });
@@ -87,8 +87,8 @@ module.exports = function( rawArgs, exitCallback ) {
   // Create the CONVERT command
   program
     .command('convert')
-    .description('Convert a resume to/from FRESH or JSON RESUME format.')
-    .option('-f --format <fmt>', 'FRESH or JRS format and optional version', undefined)
+  .description('Convert a resume to/from JSON Resume (JRS) or legacy FRESH format.')
+  .option('-f --format <fmt>', 'JRS or legacy FRESH format and optional version', undefined)
     .action(function() {
       const x = splitSrcDest.call( this );
       execute.call( this, x.src, x.dst, this.opts(), logMsg);
@@ -183,7 +183,7 @@ var initialize = function( ar, exitCallback ) {
     _out.log(chalk.cyan(PAD('  Platform:',25, null, PAD.RIGHT)) + chalk.cyan.bold( process.platform === 'win32' ? 'windows' : process.platform ));
     _out.log(chalk.cyan(PAD('  Node.js:',25, null, PAD.RIGHT)) + chalk.cyan.bold( process.version ));
     _out.log(chalk.cyan(PAD('  HackMyResume:',25, null, PAD.RIGHT)) + chalk.cyan.bold(`v${PKG.version}` ));
-    _out.log(chalk.cyan(PAD('  FRESCA:',25, null, PAD.RIGHT)) + chalk.cyan.bold( PKG.dependencies.fresca ));
+  _out.log(chalk.cyan(PAD('  FRESCA (legacy) / JRS:',25, null, PAD.RIGHT)) + chalk.cyan.bold( PKG.dependencies.fresca ));
     //_out.log(chalk.cyan(PAD('  fresh-themes:',25, null, PAD.RIGHT)) + chalk.cyan.bold( PKG.dependencies['fresh-themes'] ))
     //_out.log(chalk.cyan(PAD('  fresh-jrs-converter:',25, null, PAD.RIGHT)) + chalk.cyan.bold( PKG.dependencies['fresh-jrs-converter'] ))
     _out.log('');
@@ -250,10 +250,18 @@ var initOptions = function( ar ) {
       if (optStr && (optStr = optStr.trim())) {
         //var myJSON = JSON.parse(optStr);
         if( optStr[0] === '{') {
-          // TODO: remove use of evil(). - hacksalot
-          /* jshint ignore:start */
-          oJSON = eval(`(${optStr})`); // jshint ignore:line <-- no worky
-          /* jshint ignore:end */
+          // Use JSON.parse instead of eval() for security
+          try {
+            oJSON = JSON.parse(optStr);
+          } catch (parseErr) {
+            // Return error info for malformed JSON
+            return {
+              ex: {
+                op: 'parse',
+                inner: parseErr
+              }
+            };
+          }
         } else {
           const inf = safeLoadJSON( optStr );
           if( !inf.ex ) {
@@ -416,6 +424,6 @@ var splitSrcDest = function() {
 
 /* Simple logging placeholder. */
 var logMsg = function() {
-  // eslint-disable-next-line no-console
+   
   return _opts.silent || console.log.apply( console.log, arguments );
 };

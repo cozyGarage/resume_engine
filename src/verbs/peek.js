@@ -12,7 +12,7 @@ Implementation of the 'peek' verb for HackMyResume.
 
 
 const Verb = require('../verbs/verb');
-const _ = require('underscore');
+// No underscore needed; use native array functions.
 const __ = require('lodash');
 const safeLoadJSON = require('../utils/safe-json-loader');
 const HMSTATUS = require('../core/status-codes');
@@ -20,17 +20,22 @@ const HMEVENT = require('../core/event-codes');
 
 
 
+/**
+ * PeekVerb — Extracts a field or value by path from one or more resumes.
+ * Example: hackmyresume peek resume.json basics.name
+ */
 class PeekVerb extends Verb {
-
   constructor() { super('peek', _peek); }
-
 }
 
 
 module.exports = PeekVerb;
 
-/** Peek at a resume, resume section, or resume field. */
-var _peek = function( src, dst, opts ) {
+/**
+ * Entry point for the `peek` command. Returns selected path values from
+ * one or more resume files.
+ */
+const _peek = function(src, dst, opts) {
 
   if (!src || !src.length) {
     this.err(HMSTATUS.resumeNotFound, { quit: true });
@@ -39,19 +44,14 @@ var _peek = function( src, dst, opts ) {
 
   const objPath = (dst && dst[0]) || '';
 
-  const results = _.map(src, function( t ) {
-
-    if (opts.assert && this.hasError()) { return { }; }
-
+  const results = src.map( t => {
+    if (opts.assert && this.hasError()) { return {}; }
     const tgt = _peekOne.call(this, t, objPath);
     if (tgt.error) {
       this.setError(tgt.error.fluenterror, tgt.error);
     }
-      //tgt.error.quit = opts.assert
-      //@err tgt.error.fluenterror, tgt.error
     return tgt;
-  }
-  , this);
+  });
 
   if (this.hasError() && !opts.assert) {
     this.reject(this.errorCode);
@@ -63,8 +63,10 @@ var _peek = function( src, dst, opts ) {
 
 
 
-/** Peek at a single resume, resume section, or resume field. */
-var _peekOne = function( t, objPath ) {
+/**
+ * Peek at a single resume for the given object path. Returns a value or error object.
+ */
+const _peekOne = function(t, objPath) {
 
   this.stat(HMEVENT.beforePeek, { file: t, target: objPath });
 

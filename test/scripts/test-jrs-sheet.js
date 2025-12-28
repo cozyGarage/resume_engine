@@ -32,7 +32,7 @@ function testResume( opts ) {
     it('should open without throwing an exception', function () {
       var that = this;
       function tryOpen() {
-        var res = ResumeFactory.loadOne( path.normalize( path.join( __dirname, '/../../node_modules/fresh-test-resumes/src/jrs/' + opts.title + '.json' ) ), { objectify: true } );
+        var res = ResumeFactory.loadOne( path.normalize( path.join( __dirname, '/../../test/fixtures/jrs/' + opts.title + '.json' ) ), { objectify: true } );
         _sheet = res.rez;
       }
       tryOpen.should.not.Throw();

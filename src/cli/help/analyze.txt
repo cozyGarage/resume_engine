@@ -14,7 +14,7 @@ Parameters:
 
    **<resume>**
 
-      Path to a FRESH or JRS resume. Multiple resumes can be
+   Path to a JRS or legacy FRESH resume. Multiple resumes can be
       specified, separated by spaces.
 
       hackmyresume ANALYZE resume.json

@@ -83,7 +83,7 @@ var GenericHelpers = (module.exports = {
 
   /**
   Emit a formatted string representing the specified datetime.
-  @param {string} dateValue A raw date value from the FRESH or JRS resume.
+  @param {string} dateValue A raw date value from the JSON Resume (JRS) or FRESH resume.
   @param {string} [dateFormat='YYYY-MM'] The desired datetime format. Must be
   compatible with Moment.js datetime formats.
   @param {string} [dateDefault=null] The default date value to use if the dateValue

@@ -16,7 +16,7 @@ retrieval via the `COMMIT` or `STORE` command(s) starting in 1.7.0 or 1.8.0.
 
 ### fresh-themes 1.0.0
 
-The **fresh-themes 1.0** release will bring 100% coverage of the FRESH and JRS
+The **fresh-themes 1.0** release will bring 100% coverage of the JSON Resume (JRS) and FRESH
 object models&mdash;all resume sections and fields&mdash;along with
 documentation, theme developer's guide, new themes, and a freeze to the FRESH
 theme structure.

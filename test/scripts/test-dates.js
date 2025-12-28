@@ -11,7 +11,7 @@ var chai = require('chai')
   , should = chai.should()
   , path = require('path')
   , _ = require('underscore')
-	, FRESHResume = require('../../src/core/fresh-resume')
+  , JRSResume = require('../../src/core/jrs-resume')
   , FCMD = require( '../../src/index')
   , validator = require('is-my-json-valid')
   , EXTEND = require('extend');
@@ -29,11 +29,9 @@ var gig = {
 var r = {
   name: 'John Doe',
   meta: {
-    format: 'FRESH@0.6.0'
+    format: 'JRS@1.0'
   },
-  employment: {
-    history: [ null ]
-  }
+  work: [ null ]
 };
 
 
@@ -82,9 +80,9 @@ describe.skip('Testing DATES', function () {
 
     it( JSON.stringify( _.initial(t) ), function () {
       r.employment.history = _.initial( t );
-      var rObj = new FRESHResume();
-      rObj.parseJSON( r );
-      var dur = rObj.duration();
+    var rObj = new JRSResume();
+    rObj.parseJSON( r );
+    var dur = rObj.duration();
       expect( dur ).to.equal( _.last(t).val );
     });
 

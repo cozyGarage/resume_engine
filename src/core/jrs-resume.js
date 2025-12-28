@@ -86,8 +86,12 @@ class JRSResume {
       scrubbed = ret.scrubbed;
     }
 
-    // Extend resume properties onto ourself.
-    extend(true, this, opts.privatize ? scrubbed : rep);
+  // Apply starter defaults first so missing sections exist, then merge in the
+  // supplied resume representation (or its scrubbed variant). This ensures
+  // that resumes missing optional sections will still contain default
+  // empty arrays/objects where expected by callers and tests.
+  const starter = require('./jrs-starter').jrs;
+  extend(true, this, starter, opts.privatize ? scrubbed : rep);
 
     // Set up metadata
     if (!(this.imp != null ? this.imp.processed : undefined)) {
@@ -125,7 +129,7 @@ class JRSResume {
 
 
 
-  /** Save the sheet to disk in a specific format, either FRESH or JRS. */
+  /** Save the sheet to disk in a specific format, either JSON Resume (JRS) or FRESH. */
   saveAs( filename, format ) {
     if (format === 'JRS') {
       this.imp.file = filename || this.imp.file;

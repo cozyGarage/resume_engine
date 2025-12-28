@@ -1,7 +1,7 @@
 
-var MKDIRP = require('mkdirp');
-var PATH = require('path');
-MKDIRP( PATH.join( __dirname, '/sandbox' ) );
+const FS = require('fs');
+const PATH = require('path');
+FS.mkdirSync(PATH.join(__dirname, '/sandbox'), { recursive: true });
 
 require('./scripts/test-cli');
 require('./scripts/test-jrs-sheet');

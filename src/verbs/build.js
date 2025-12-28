@@ -13,8 +13,9 @@ Implementation of the 'build' verb for HackMyResume.
 
 
 const _              = require('underscore');
+const FS             = require('fs');
 const PATH           = require('path');
-const MKDIRP         = require('mkdirp');
+// Use native fs methods for directory creation (recursive) instead of mkdirp
 const extend         = require('extend');
 const parsePath      = require('parse-filepath');
 const pathExists     = require('path-exists').sync;
@@ -65,7 +66,13 @@ theme file, generate 0..N resumes in the desired formats.
 @param dst An array of paths to the target resume file(s).
 @param opts Generation options.
 */
-var _build = function( src, dst, opts ) {
+/**
+ * Build verb implementation.
+ * @param {Array<string>} src Source resume paths to load and merge.
+ * @param {Array<string>} dst Target output paths to generate.
+ * @param {Object} opts Options for generation.
+ */
+const _build = function(src, dst, opts) {
 
   let err;
   if (!src || !src.length) {
@@ -178,7 +185,10 @@ var _build = function( src, dst, opts ) {
 /**
 Prepare for a BUILD run.
 */
-var _prep = function( src, dst, opts ) {
+/**
+ * Prepare the build options and callbacks.
+ */
+const _prep = function(src, dst, opts) {
   // Cherry-pick options //_opts = extend( true, _opts, opts );
   _opts.theme = (opts.theme && opts.theme.trim()) || 'jsonresume-theme-modern';
   _opts.prettify = opts.prettify === true;
@@ -221,7 +231,10 @@ TODO: Refactor.
 @param targInfo Information for the target resume.
 @param theme A JRSTheme object.
 */
-var _single = function( targInfo, theme, finished ) {
+/**
+ * Generate a single target resume using the provided theme.
+ */
+const _single = function(targInfo, theme, finished) {
 
   let ret = null;
   let ex = null;
@@ -245,15 +258,15 @@ var _single = function( targInfo, theme, finished ) {
   // If targInfo.fmt.files exists, this format is backed by a document.
     if (targInfo.fmt.files && targInfo.fmt.files.length) {
       theFormat = _fmts.filter( fmt => fmt.name === targInfo.fmt.outFormat)[0];
-      MKDIRP.sync(PATH.dirname( f ));
+  FS.mkdirSync(PATH.dirname( f ), { recursive: true });
       ret = theFormat.gen.generate(_rezObj, f, _opts);
 
     // Otherwise this is an ad-hoc format (JSON, YML, or PNG) that every theme
     // gets "for free".
     } else {
       theFormat = _fmts.filter( fmt => fmt.name === targInfo.fmt.outFormat)[0];
-      const outFolder = PATH.dirname(f);
-      MKDIRP.sync(outFolder); // Ensure dest folder exists;
+  const outFolder = PATH.dirname(f);
+  FS.mkdirSync(outFolder, { recursive: true }); // Ensure dest folder exists;
       ret = theFormat.gen.generate(_rezObj, f, _opts);
     }
 
@@ -281,12 +294,16 @@ var _single = function( targInfo, theme, finished ) {
 
 
 /** Ensure that user-specified outputs/targets are valid. */
-var _verifyOutputs = function( targets, theme ) {
+/**
+ * Verify that requested outputs are supported by the theme.
+ */
+const _verifyOutputs = function(targets, theme) {
   this.stat(HMEVENT.verifyOutputs, {targets, theme});
-  return _.reject(targets.map( function( t ) {
+  const invalids = targets.map( t => {
     const pathInfo = parsePath(t);
-    return {format: pathInfo.extname.substr(1)}; }),
-    t => (t.format === 'all') || theme.hasFormat( t.format ));
+    return { format: pathInfo.extname.substr(1) };
+  }).filter(t => !(t.format === 'all' || theme.hasFormat(t.format)));
+  return invalids;
 };
 
 
@@ -300,7 +317,10 @@ that declares an HTML format; the theme doesn't have to provide an explicit
 PNG template.
 @param theTheme A JRSTheme object.
 */
-var _addFreebieFormats = function( theTheme ) {
+/**
+ * Add non-template 'freebie' formats (json, yml, png) to theme.
+ */
+const _addFreebieFormats = function(theTheme) {
   // Add freebie formats (JSON, YAML, PNG) every theme gets...
   // Add HTML-driven PNG only if the theme has an HTML format.
   theTheme.formats.json = theTheme.formats.json || {
@@ -327,7 +347,10 @@ Expand output files. For example, "foo.all" should be expanded to
 @param dst An array of output files as specified by the user.
 @param theTheme A JRSTheme object.
 */
-var _expand = function( dst, theTheme ) {
+/**
+ * Expand destination shorthand (.all) into per-format target list.
+ */
+const _expand = function(dst, theTheme) {
 
   // Set up the destination collection. It's either the array of files passed
   // by the user or 'out/resume.all' if no targets were specified.
@@ -356,7 +379,10 @@ var _expand = function( dst, theTheme ) {
 /**
 Verify the specified theme name/path.
 */
-var _verifyTheme = function( themeNameOrPath ) {
+/**
+ * Attempt to resolve candidate theme names/paths and return a resolved path.
+ */
+const _verifyTheme = function(themeNameOrPath) {
   const cleanedInput = (themeNameOrPath || '').trim();
   const candidates = _expandThemeCandidates(cleanedInput);
 
@@ -370,7 +396,7 @@ var _verifyTheme = function( themeNameOrPath ) {
   return {fluenterror: HMSTATUS.themeNotFound, data: cleanedInput};
 };
 
-var _expandThemeCandidates = function(name) {
+const _expandThemeCandidates = function(name) {
   const trimmed = (name || '').trim();
   const lower = trimmed.toLowerCase();
   const candidates = [];
@@ -392,7 +418,7 @@ var _expandThemeCandidates = function(name) {
   return _.uniq(candidates.filter(Boolean));
 };
 
-var _tryResolveTheme = function(candidate) {
+const _tryResolveTheme = function(candidate) {
   if (!candidate) {
     return null;
   }
@@ -415,7 +441,7 @@ var _tryResolveTheme = function(candidate) {
 /**
 Load the specified JSON Resume theme.
 */
-var _loadTheme = function( tFolder ) {
+const _loadTheme = function(tFolder) {
   const theTheme = new JRSTheme().open(tFolder);
   _opts.themeObj = theTheme;
   return theTheme;

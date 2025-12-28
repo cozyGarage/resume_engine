@@ -104,7 +104,7 @@ class FreshResume {// extends AbstractResume
 
 
   /**
-  Save the sheet to disk in a specific format, either FRESH or JSON Resume.
+  Save the sheet to disk in a specific format, either JSON Resume (JRS) or FRESH.
   */
   saveAs( filename, format ) {
 

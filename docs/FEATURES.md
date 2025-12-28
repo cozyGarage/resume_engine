@@ -5,9 +5,9 @@ Core features of HackMyResume
 -----------------------------
 
 - CLI & Programmatic API: Both a command-line and programmatic library-based interface to manipulate, analyze, validate, convert, and generate resumes.
-- Supports multiple input formats: FRESH, JSON Resume (JRS).
+- Supports multiple input formats: JSON Resume (JRS), legacy FRESH.
 - Output formats: HTML, Markdown, LaTeX, MS Word, PDF, Plain text, JSON, XML, YAML, PNG, LaTeX.
-- Theming: Support for FRESH & JSON Resume themes (modern, positive, compact, awesome, basis, and third-party themes).
+- Theming: Support for JSON Resume & legacy FRESH themes (modern, positive, compact, awesome, basis, and third-party themes).
 - Deterministic testing: `HMR_NOW` allows pinning system 'now' for test stability.
 - Bun-first developer experience: `bun install` / `bun run test` primary flow; Node fallback supported.
 - Programmatic API: Verb classes (`HMR.verbs.*`) expose operations such as build, analyze, validate, convert, new, and peek.

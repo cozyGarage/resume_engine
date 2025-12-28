@@ -47,7 +47,7 @@ class OutputHandler {
   log() {
     printf = require('printf');
     const finished = printf.apply( printf, arguments );
-    return this.opts.silent || console.log( finished ); // eslint-disable-line no-console
+    return this.opts.silent || console.log( finished );  
   }
 
 
@@ -186,7 +186,7 @@ class OutputHandler {
 
         // If the key was present, print it
         if ((evt.target !== undefined) && !evt.error) {
-          // eslint-disable-next-line no-console
+           
           return console.dir( evt.target, { depth: null, colors: true } );
 
         // If the key was not present, but no error occurred, print it

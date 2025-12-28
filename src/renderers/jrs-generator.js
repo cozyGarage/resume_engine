@@ -23,8 +23,8 @@ module.exports = {
     // Disable JRS theme chatter (console.log, console.error, etc.)
     const turnoff = ['log', 'error', 'dir'];
     const org = turnoff.map(function(c) {
-      const ret = console[c]; // eslint-disable-line no-console
-      console[c] = function() {}; // eslint-disable-line no-console
+      const ret = console[c];  
+      console[c] = function() {};  
       return ret;
     });
 
@@ -32,7 +32,7 @@ module.exports = {
     let rezHtml = theme.render(json.harden());
 
     // Turn logging back on
-    turnoff.forEach((c, idx) => console[c] = org[idx]); // eslint-disable-line no-console
+    turnoff.forEach((c, idx) => console[c] = org[idx]);  
 
     // Unfreeze and apply Markdown
     return rezHtml = rezHtml.replace(/@@@@~[\s\S]*?~@@@@/g, val => MDIN( val.replace( /~@@@@/g,'' ).replace( /@@@@~/g,'' ) ));

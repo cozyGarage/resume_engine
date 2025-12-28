@@ -32,7 +32,7 @@ var opts2 = {
 };
 
 var sb = 'test/sandbox/';
-var ft = 'node_modules/fresh-test-resumes/src/jrs/';
+var ft = 'test/fixtures/jrs/';
 
 // Assemble an array of tests, taking the form of parameters we'll pass to
 // each of the defined HackMyResume verbs.

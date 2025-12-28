@@ -1,0 +1,8 @@
+{
+  "basics": {
+    "name": "Jane Incomplete"
+  },
+  "skills": [
+    { "name": "Programming", "keywords": ["JavaScript"] }
+  ]
+}

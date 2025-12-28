@@ -13,7 +13,7 @@ Parameters:
 
    **<resume>**
 
-      Path to a FRESH or JRS resume (*.json) containing your
+   Path to a JRS or legacy FRESH resume (*.json) containing your
       resume data. Multiple resumes may be specified.
 
       If multiple resumes are specified, they will be merged
@@ -42,7 +42,7 @@ Options:
 
    **--theme -t <theme-name-or-path>**
 
-      Path to a FRESH or JSON Resume theme OR the name of a
+   Path to a JSON Resume (JRS) or legacy FRESH theme OR the name of a
       built-in theme. Valid theme names are 'modern',
       'positive', 'compact', 'awesome', and 'basis'.
 
